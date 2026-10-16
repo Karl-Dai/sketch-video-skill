@@ -228,8 +228,21 @@ def prepare_audio(story_path, manifest, out, fps=24):
         clips = data.get('clips', [])
         if len(clips) != len(scenes) or [c.get('scene') for c in clips] != list(range(len(scenes))):
             raise ValueError('scene clips must cover every scene once in order, starting at 0')
-        for clip in clips:
-            chunks.append(pcm(resolve(manifest, clip['wav'])))
+        for i, clip in enumerate(clips):
+            source = resolve(manifest, clip['wav'])
+            before = hashlib.sha256(source.read_bytes()).hexdigest()
+            estimated = data.get('caption_timing') in ('energy_pause_estimate', 'semantic_pause_estimate')
+            if estimated and not all(clip.get(k) for k in ('audio_sha256', 'expected_text_sha256')):
+                raise ValueError('estimated caption times require source audio/text hashes')
+            if clip.get('audio_sha256') is not None and clip['audio_sha256'] != before:
+                raise ValueError('audio changed since caption alignment; regenerate timing')
+            expected_text = ''.join(scenes[i].get('spoken_captions', scenes[i]['captions'])).strip()
+            if clip.get('expected_text_sha256') is not None and clip['expected_text_sha256'] != hashlib.sha256(expected_text.encode()).hexdigest():
+                raise ValueError('narration text changed since caption alignment; regenerate timing')
+            samples = pcm(source)
+            if hashlib.sha256(source.read_bytes()).hexdigest() != before:
+                raise ValueError('source audio changed while decoding')
+            chunks.append(samples)
             timings.append(clip.get('caption_times'))
     elif data.get('mode') == 'whole':
         if len(data.get('clips', [])) != 1:

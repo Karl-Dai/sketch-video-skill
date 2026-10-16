@@ -94,8 +94,8 @@
       "pypinyin": "0.55.0"
     },
     "python_tests": {
-      "total": 44,
-      "passed": 43,
+      "total": 45,
+      "passed": 44,
       "skipped": 1,
       "skip_reason": "Original optional audition media is intentionally not bundled."
     },
@@ -107,7 +107,10 @@
       "pre-import offline and telemetry environment guards",
       "mocked Qwen/Whisper local-only loading contracts",
       "extracted npm package pause alignment to prepare-audio",
-      "48-frame silent and 59-frame audiovisual full decode"
+      "48-frame silent and 59-frame audiovisual full decode",
+      "source audio/text hashes retained through prepare-audio",
+      "source mutation during ASR refused",
+      "nonfinite ASR duration refused"
     ],
     "model_download_bytes": 0,
     "actual_model_inference_executed": false,

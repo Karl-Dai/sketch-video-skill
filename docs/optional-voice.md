@@ -80,7 +80,7 @@ python scripts/production.py prepare-audio examples/water-cycle.zh.json \
 
 `align-captions` 只接受按顺序覆盖全部场景的 WAV manifest。可在每个分镜加入与 `captions` 等长的 `spoken_captions`（数字读法、缩写展开等）；显示文字不变，估计使用实际说法。否则直接使用显示字幕。长场景仍须遵守渲染器的 120 秒限制。
 
-输出 `scene-000.json` 等报告与可直接输入 `prepare-audio` 的 `audio.json`。动态规划结合文字权重、标点、能量停顿和最短时长；没有停顿时回退并降低置信度。结果是 **energy_pause_estimate**，不自动标为人工审核或强制对齐。最终帧量化仍由主流程完成，只在尾部补齐帧量化差额（场景至少一秒）。
+输出 `scene-000.json` 等报告与可直接输入 `prepare-audio` 的 `audio.json`。源音频与讲稿哈希保留在每个 clip 中；即使音长相同，修改音频或讲稿也会导致 `prepare-audio` 拒绝旧估计，必须重新对齐。识别过程中源音频变化也会导致 ASR 拒绝保存结果。动态规划结合文字权重、标点、能量停顿和最短时长；没有停顿时回退并降低置信度。结果是 **energy_pause_estimate**，不自动标为人工审核或强制对齐。最终帧量化仍由主流程完成，只在尾部补齐帧量化差额（场景至少一秒）。
 
 ## 无提示 ASR 与语义边界
 

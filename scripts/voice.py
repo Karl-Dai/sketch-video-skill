@@ -133,7 +133,10 @@ def whisper(args):
     processor = AutoProcessor.from_pretrained(str(args.model_dir.resolve()), local_files_only=True, trust_remote_code=False)
     model = AutoModelForSpeechSeq2Seq.from_pretrained(str(args.model_dir.resolve()), dtype=torch.float32,
                 attn_implementation='eager', local_files_only=True, trust_remote_code=False, use_safetensors=True).to('cpu')
+    source_hash = digest(args.audio)
     audio, rate = sf.read(args.audio, dtype='float32')
+    if digest(args.audio) != source_hash:
+        raise ValueError('source audio changed while reading')
     if audio.ndim != 1 or not len(audio) or not np.isfinite(audio).all():
         raise ValueError('Whisper adapter requires finite, nonempty mono audio')
     original_duration = len(audio)/rate
@@ -155,7 +158,9 @@ def whisper(args):
     transcript_segments(dict(segments=segments))
     if segments[-1]['end'] > original_duration+.08:
         raise ValueError('ASR timestamp exceeds source audio duration')
-    result = dict(verified, segments=segments, text=raw.get('text', ''), audio_sha256=digest(args.audio),
+    if digest(args.audio) != source_hash:
+        raise ValueError('source audio changed during recognition; regenerate ASR')
+    result = dict(verified, segments=segments, text=raw.get('text', ''), audio_sha256=source_hash,
                   audio_duration_seconds=original_duration, runtime=runtime, prompt_used=False,
                   elapsed_seconds=time.perf_counter()-started, listening_review='required',
                   timestamp_note='Chinese word chunks can be phrases; not forced alignment or measured character times.')
@@ -188,14 +193,18 @@ def align(story_path, manifest_path, out, asr_manifest=None):
         if not isinstance(spoken, list) or len(spoken) != len(scene['captions']) or any(not isinstance(x, str) or not x.strip() for x in spoken):
             raise ValueError('spoken_captions must match display captions')
         captions = [dict(text=text, spoken_text=speech) for text, speech in zip(scene['captions'], spoken)]
+        source_hash = digest(audio)
         report = align_file(audio, captions)
+        if digest(audio) != source_hash:
+            raise ValueError('source audio changed during alignment')
         report.pop('audio_file', None)
-        report['audio_sha256'] = digest(audio)
+        report['audio_sha256'] = source_hash
         report['expected_text_sha256'] = hashlib.sha256(''.join(spoken).strip().encode()).hexdigest()
         if reports:
             report = support_boundaries(report, read(reports[i]), spoken)
         save(out/f'scene-{i:03}.json', report)
-        aligned.append(dict(scene=i, wav=str(audio.resolve()), caption_times=[
+        aligned.append(dict(scene=i, wav=str(audio.resolve()), audio_sha256=source_hash,
+                            expected_text_sha256=report['expected_text_sha256'], caption_times=[
             [c['start_seconds'], c['end_seconds']] for c in report['captions']]))
     result = dict(mode='scene', clips=aligned, caption_timing='semantic_pause_estimate' if reports else 'energy_pause_estimate',
                   listening_review='required', forced_alignment=False)

@@ -1,6 +1,7 @@
 """Support energy-pause estimates with unprompted ASR phrase edges; never forced alignment."""
 import difflib
 import hashlib
+import math
 import unicodedata
 
 
@@ -19,6 +20,9 @@ def support_boundaries(report, transcript, spoken):
     segments = transcript_segments(transcript)
     if transcript.get('prompt_used') is not False:
         raise ValueError('semantic alignment requires an explicitly unprompted ASR report')
+    duration = transcript.get('audio_duration_seconds')
+    if isinstance(duration, bool) or not isinstance(duration, (int, float)) or not math.isfinite(duration) or duration <= 0:
+        raise ValueError('ASR duration must be finite and positive')
     expected_hash = hashlib.sha256(''.join(spoken).strip().encode()).hexdigest()
     if (transcript.get('audio_sha256') != report['audio_sha256'] or
             transcript.get('expected_text_sha256') != expected_hash or

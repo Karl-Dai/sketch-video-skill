@@ -70,6 +70,13 @@ class VoiceTimingTests(unittest.TestCase):
             with self.subTest(key=key), self.assertRaises((ValueError,TypeError)):
                 support_boundaries(self.report(), transcript, self.spoken)
 
+    def test_nonfinite_semantic_duration_is_refused(self):
+        from voice_support.semantic import support_boundaries
+        for duration in (float('nan'),float('inf'),True,-1):
+            transcript = self.transcript(); transcript['audio_duration_seconds'] = duration
+            with self.subTest(duration=duration), self.assertRaises(ValueError):
+                support_boundaries(self.report(),transcript,self.spoken)
+
     def test_phrase_internal_boundary_is_low_confidence(self):
         from voice_support.semantic import support_boundaries
         transcript = self.transcript(); transcript['segments'] = [dict(start=0,end=2.5,text=''.join(self.spoken))]
@@ -109,14 +116,16 @@ class VoiceTimingTests(unittest.TestCase):
 
     def test_mocked_whisper_is_unprompted_and_hash_bound(self):
         import soundfile as sf
-        captured = {}
+        from scipy.signal import resample_poly  # Load compiled dependencies before patch.dict restores sys.modules.
+        captured = {}; mutate = [False]
         def load(*args, **kwargs):
             self.assertTrue(kwargs['local_files_only']); self.assertFalse(kwargs['trust_remote_code'])
             return SimpleNamespace(to=lambda device: object())
         processor = SimpleNamespace(from_pretrained=lambda *a, **kw: SimpleNamespace(tokenizer=object(),feature_extractor=object()))
-        def pipeline(*args, **kwargs):
+        def pipeline(*pipe_args, **kwargs):
             def runner(audio, **options):
                 captured.update(options)
+                if mutate[0]: sf.write(args.audio, self.audio[::-1]*.5, self.sr)
                 return dict(text=''.join(self.spoken),chunks=[dict(text=text,timestamp=(i*1.5,min(2.5,i*1.5+1))) for i,text in enumerate(self.spoken)])
             return runner
         torch = SimpleNamespace(Tensor=type('MockTensor', (), {}),float32='float32',set_num_threads=lambda n:None,set_num_interop_threads=lambda n:None)
@@ -131,6 +140,11 @@ class VoiceTimingTests(unittest.TestCase):
             self.assertEqual(result['expected_text_sha256'],self.transcript()['expected_text_sha256'])
             self.assertNotIn('prompt_ids',captured['generate_kwargs'])
             self.assertNotIn('initial_prompt',captured['generate_kwargs'])
+            mutate[0] = True; args.output = root/'stale-asr.json'
+            with patch.object(voice,'verify_model',return_value={'mocked_model':True}), patch.dict(sys.modules,{'torch':torch,'transformers':transformers}):
+                with self.assertRaisesRegex(ValueError, 'changed during recognition'):
+                    voice.whisper(args)
+            self.assertFalse(args.output.exists())
 
     def test_aligned_manifest_retimes_existing_renderer(self):
         import soundfile as sf
@@ -147,6 +161,20 @@ class VoiceTimingTests(unittest.TestCase):
             self.assertEqual(retimed['scenes'][0]['layout'],'comparison')
             self.assertEqual(len(retimed['scenes'][0]['caption_frames']),2)
             with self.assertRaises(FileExistsError): voice.align(root/'story.json',root/'audio.json',root/'aligned')
+            transcript = self.transcript(); transcript['audio_sha256'] = voice.digest(root/'scene.wav')
+            (root/'asr.json').write_text(json.dumps(transcript)); (root/'asr-scenes.json').write_text(json.dumps(dict(scenes=[dict(scene=0,transcript='asr.json')])))
+            semantic = voice.align(root/'story.json',root/'audio.json',root/'semantic',root/'asr-scenes.json')
+            self.assertEqual(semantic['caption_timing'],'semantic_pause_estimate')
+            prepare_audio(root/'story.json',root/'semantic/audio.json',root/'semantic-prepared')
+            # Same duration, different source bytes: old estimates must never be accepted.
+            sf.write(root/'scene.wav',self.audio*.5,self.sr,subtype='PCM_24')
+            with self.assertRaisesRegex(ValueError,'audio changed'):
+                prepare_audio(root/'story.json',root/'aligned/audio.json',root/'stale-prepared')
+            sf.write(root/'scene.wav',self.audio,self.sr,subtype='PCM_24')
+            story['scenes'][0]['captions'][0] = 'Changed script.'
+            (root/'story.json').write_text(json.dumps(story))
+            with self.assertRaisesRegex(ValueError,'narration text changed'):
+                prepare_audio(root/'story.json',root/'aligned/audio.json',root/'stale-text-prepared')
 
 
 if __name__ == '__main__': unittest.main()
