@@ -1,0 +1,5 @@
+# Optional audio analysis only; no torch, model engine or weights.
+numpy>=1.26,<3
+soundfile>=0.12,<1
+scipy>=1.12,<2
+pypinyin==0.55.0

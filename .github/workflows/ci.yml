@@ -18,7 +18,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-noto-cjk
-          python -m pip install -r requirements-dev.txt
+          python -m pip install -r requirements-dev.txt -r requirements-voice-tools.txt
       - name: Validate package and regression tests
         env:
           TEST_FONT: /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf

@@ -82,5 +82,36 @@
       "caption_clock": "contiguous and identical to SRT",
       "visual_review": "manual review required; see scene JPGs and contact sheets"
     }
+  },
+  "optional_voice_tools": {
+    "validation_date": "2026-10-16",
+    "environment": {
+      "os": "macOS ARM64",
+      "python": "3.14.7",
+      "numpy": "2.5.4",
+      "soundfile": "0.14.0",
+      "scipy": "1.18.1",
+      "pypinyin": "0.55.0"
+    },
+    "python_tests": {
+      "total": 44,
+      "passed": 43,
+      "skipped": 1,
+      "skip_reason": "Original optional audition media is intentionally not bundled."
+    },
+    "node_cli_tests_passed": 4,
+    "checks": [
+      "energy-pause dynamic program vs exhaustive candidate graphs",
+      "quiet splicing and PCM file round trip",
+      "semantic ASR audio/text hash binding and stale-report refusal",
+      "pre-import offline and telemetry environment guards",
+      "mocked Qwen/Whisper local-only loading contracts",
+      "extracted npm package pause alignment to prepare-audio",
+      "48-frame silent and 59-frame audiovisual full decode"
+    ],
+    "model_download_bytes": 0,
+    "actual_model_inference_executed": false,
+    "human_speech_listening_executed": false,
+    "automatic_external_upload": false
   }
 }

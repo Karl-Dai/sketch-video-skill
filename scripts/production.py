@@ -140,7 +140,7 @@ def runtime_profile(config):
 
 def execute_adapter(config, values):
     runtime = runtime_profile(config)
-    values = dict(values, dtype=runtime['dtype'])
+    values = dict(values, dtype=runtime['dtype'], python=sys.executable, adapter_script=Path(__file__).resolve().with_name('voice.py'))
     args = []
     for value in config['command']:
         for key, replacement in values.items():
@@ -149,7 +149,8 @@ def execute_adapter(config, values):
             raise ValueError('unresolved adapter placeholder')
         args.append(value)
     # Only invoked by the explicit --execute path. Configuration is executable code.
-    environment = dict(os.environ, HF_HUB_OFFLINE='1', TRANSFORMERS_OFFLINE='1')
+    environment = dict(os.environ, HF_HUB_OFFLINE='1', TRANSFORMERS_OFFLINE='1',
+                       HF_HUB_DISABLE_TELEMETRY='1', HF_HUB_DISABLE_IMPLICIT_TOKEN='1', ORT_DISABLE_TELEMETRY='1')
     result = subprocess.run(args, check=False, capture_output=True, env=environment)
     if result.returncode:
         raise ValueError(f'local adapter failed with exit code {result.returncode}; review its configuration locally')
@@ -272,7 +273,7 @@ def prepare_audio(story_path, manifest, out, fps=24):
         joined.extend(samples)
         joined.extend(b'\x00\x00'*pad)
         alignment.append(dict(scene=i, measured_seconds=stats['duration'], frame_duration=frames/fps,
-                              padded_seconds=pad/RATE, caption_timing='reviewed_boundaries' if spans else 'text_length_heuristic', audio=stats))
+                              padded_seconds=pad/RATE, caption_timing=(data.get('caption_timing', 'provided_boundaries_review_required') if spans else 'text_length_heuristic'), audio=stats))
     clock = timeline(adjusted, fps)
     out = new(out)
     write(out/'retimed.json', adjusted)

@@ -1,0 +1,17 @@
+{
+  "mode": "scene",
+  "clips": [
+    {
+      "scene": 0,
+      "text": "太阳能驱动蒸发。水汽凝结形成云，降水回到地表。",
+      "voice": "Serena",
+      "language": "Chinese"
+    },
+    {
+      "scene": 1,
+      "text": "水渗入土壤，也可能补给地下水。",
+      "voice": "Serena",
+      "language": "Chinese"
+    }
+  ]
+}

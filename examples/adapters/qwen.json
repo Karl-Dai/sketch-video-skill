@@ -1,0 +1,30 @@
+{
+  "command": [
+    "{python}",
+    "{adapter_script}",
+    "qwen",
+    "--model-dir",
+    "/path/to/local/qwen-model",
+    "--text-file",
+    "{text_file}",
+    "--output",
+    "{output_wav}",
+    "--voice",
+    "{voice}",
+    "--language",
+    "{language}",
+    "--dtype",
+    "{dtype}"
+  ],
+  "dtype": "bfloat16",
+  "platforms": [
+    "Linux"
+  ],
+  "model": {
+    "id": "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice@85e237c12c027371202489a0ec509ded67b5e4b5",
+    "source": "https://huggingface.co/Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice",
+    "license": "Apache-2.0",
+    "download_bytes": null,
+    "cost_note": "Local compute and storage; acquire weights separately after approval. Exact downloaded bytes not measured here."
+  }
+}

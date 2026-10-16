@@ -107,7 +107,7 @@ python scripts/production.py package build/final --metadata publication.json --o
 
 ASR is optional; use an existing transcript or an installed adapter, never an automatic model download. Without reviewed caption boundaries, timing is a labelled heuristic, not forced alignment. A **no-model test-tone version** of the entire example is provided in the walkthrough; it validates media plumbing, not speech quality.
 
-Serena was accepted in an upstream Qwen3-TTS audition for one production. Full-film/Whisper checks are still in progress there; no universal naturalness or platform-speed claim is made. The 0.6B CustomVoice path does not support extra style instructions. Model sizes, licenses and unknown costs are explicit in the audio reference.
+The upstream Qwen3-TTS Serena production completed at 358.875 seconds, 18 scenes and 54 captions with local Whisper checks and full AV decoding. No sentence-by-sentence human listening or fresh local model inference is claimed. The 0.6B CustomVoice path does not support extra style instructions. Model sizes, licenses and unknown costs are explicit in the audio reference. [Optional offline tools](docs/optional-voice.md) now include local Qwen/Whisper adapters, pinned weight verification, pause/semantic timing estimates and quiet splicing, also available through npx. Acquire models separately; nothing downloads automatically.
 
 `package` sends nothing. After reviewing facts, rights, privacy, account and AV quality, a separately authorized browser/manual action may upload. Record observed success, draft, failure or uncertainty with `record-publication`. No generic Xiaohongshu publishing API is claimed.
 

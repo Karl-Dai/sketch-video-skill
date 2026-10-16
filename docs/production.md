@@ -109,3 +109,8 @@ python scripts/production.py record-publication build/handoff --receipt receipt.
 ```
 
 `--authorized` records the caller's statement; it does not create consent or perform an external action. Never use `published` without observed success. Other outcomes: `draft`, `failed`, `unknown`, `denied`, `not_attempted`; the last four can be recorded without the flag. Target/hash must match, changed handoff files are rejected, and existing receipts are never overwritten. Inspect uncertain external outcomes before retrying.
+
+
+## Concrete optional engines and timing helpers
+
+[Optional voice tools](optional-voice.md) provide Qwen 0.6B Serena / Whisper small local CPU adapters, pre-import offline and telemetry guards, pinned weight checks, energy/semantic caption estimates and quiet splicing. They reuse reviewed upstream source; portable inference has not been rerun here. The model-free fixture remains the reproducible baseline. Use `align-captions` output audio.json with `prepare-audio`; estimates retain a review-required label.

@@ -33,6 +33,8 @@ try {
   const skill = path.join(tmp, 'installed-skill');
   run(process.execPath, [cli, 'install-skill', skill]);
   assert.ok(fs.existsSync(path.join(skill, 'scripts/render.py')));
+  assert.ok(fs.existsSync(path.join(skill, 'scripts/voice_support/alignment/pause_align.py')));
+  assert.ok(fs.existsSync(path.join(skill, 'examples/adapters/qwen.json')));
   const installed = path.join(tmp, 'npm-consumer');
   fs.mkdirSync(installed);
   run(process.execPath, [npm, 'install', archive, '--ignore-scripts', '--offline', '--no-audit', '--no-fund'], installed);
@@ -50,6 +52,14 @@ try {
     const call = (...args) => run(process.execPath, [cli, ...args, '--python', python]);
     const inputs = path.join(tmp, 'audio inputs');
     call('fixture', '--out', inputs);
+    const voice = JSON.parse(call('voice-doctor'));
+    assert.equal(voice.environment.ORT_DISABLE_TELEMETRY, '1');
+    if (voice.modules.numpy && voice.modules.soundfile && voice.modules.pypinyin) {
+      const timing = path.join(tmp, 'pause timing');
+      call('align-captions', path.join(inputs, 'story.json'), '--audio', path.join(inputs, 'audio.json'), '--out', timing);
+      assert.equal(JSON.parse(fs.readFileSync(path.join(timing, 'audio.json'))).caption_timing, 'energy_pause_estimate');
+      call('prepare-audio', path.join(inputs, 'story.json'), '--audio', path.join(timing, 'audio.json'), '--out', path.join(tmp, 'timing prepared'));
+    }
     const prepared = path.join(tmp, 'prepared audio');
     call('prepare-audio', path.join(inputs, 'story.json'), '--audio', path.join(inputs, 'audio.json'), '--out', prepared);
     const animation = path.join(tmp, 'animation');

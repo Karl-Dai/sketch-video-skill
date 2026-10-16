@@ -19,6 +19,7 @@ Usage:
   sketch-video fixture --out <new-directory>
   sketch-video audition | select-voice | tts | asr | prepare-audio | asr-check [options]
   sketch-video mux | verify-av | package | record-publication [options]
+  sketch-video voice-doctor | verify-model | qwen | whisper | align-captions | splice-audio [options]
 
 Rendering options are passed to the bundled Python renderer; use render --help.
 Production steps use --help for their exact syntax; --python is supported on each.
@@ -80,7 +81,7 @@ function init(args) {
 function installSkill(args) {
   if (args.length !== 1 || args[0].startsWith('--')) fail('install-skill requires an explicit new skill directory');
   const created = createNewDirectory(args[0], dest => {
-    for (const name of ['SKILL.md', 'agents', 'scripts', 'references', 'examples', 'docs', 'requirements.txt', 'requirements-dev.txt', 'README.md', 'README.zh-CN.md', 'README_EN.md', 'NOTICE.md', 'LICENSE']) {
+    for (const name of ['SKILL.md', 'agents', 'scripts', 'references', 'examples', 'docs', 'requirements.txt', 'requirements-dev.txt', 'requirements-voice-tools.txt', 'README.md', 'README.zh-CN.md', 'README_EN.md', 'NOTICE.md', 'LICENSE']) {
       fs.cpSync(path.join(root, name), path.join(dest, name), { recursive: true, filter: source => !source.includes('__pycache__') && !source.endsWith('.pyc') });
     }
   });
@@ -110,6 +111,10 @@ function main(args) {
   if (command === 'init') { init(args); return 0; }
   if (command === 'install-skill') { installSkill(args); return 0; }
   if (command === 'doctor') return doctor(args);
+  if (['voice-doctor', 'verify-model', 'qwen', 'whisper', 'align-captions', 'splice-audio'].includes(command)) {
+    const { python, remaining } = pythonArgs(args);
+    return invoke(python, [path.join(root, 'scripts', 'voice.py'), command, ...remaining], { stdio: 'inherit' }).status;
+  }
   if (['render', 'verify'].includes(command)) {
     const { python, remaining } = pythonArgs(args);
     if (!remaining.length) fail(`${command} requires arguments; use ${command} --help`);

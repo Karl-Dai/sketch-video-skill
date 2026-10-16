@@ -36,6 +36,15 @@ try {
     const call = (...args) => cli(...args, '--python', python);
     const inputs = path.join(tmp, 'audio inputs');
     call('fixture', '--out', inputs);
+    if (process.env.TEST_VOICE === '1') {
+      const doctor = JSON.parse(call('voice-doctor'));
+      assert.equal(doctor.environment.ORT_DISABLE_TELEMETRY, '1');
+      assert.ok(doctor.modules.numpy && doctor.modules.soundfile && doctor.modules.pypinyin);
+      const timing = path.join(tmp, 'voice-timing');
+      call('align-captions', path.join(inputs, 'story.json'), '--audio', path.join(inputs, 'audio.json'), '--out', timing);
+      assert.equal(JSON.parse(fs.readFileSync(path.join(timing, 'audio.json'))).caption_timing, 'energy_pause_estimate');
+      call('prepare-audio', path.join(inputs, 'story.json'), '--audio', path.join(timing, 'audio.json'), '--out', path.join(tmp, 'voice-prepared'));
+    }
     const prepared = path.join(tmp, 'prepared');
     call('prepare-audio', path.join(inputs, 'story.json'), '--audio', path.join(inputs, 'audio.json'), '--out', prepared);
     const animation = path.join(tmp, 'animation');
@@ -53,5 +62,5 @@ try {
   fs.mkdirSync(consumer);
   run(process.execPath, [npm, 'install', '--ignore-scripts', '--no-audit', '--no-fund', spec], consumer);
   assert.equal(run(process.execPath, [npm, 'exec', '--offline', '--', 'sketch-video', '--version'], consumer).trim(), '0.1.0');
-  console.log(JSON.stringify({status: 'passed', spec, npx_help: 'passed', npx_init: 'passed', npx_install_skill: 'passed', npx_doctor: 'passed', npx_render_verify: 'passed', decoded_frames: result.decoded_frames, production_av_frames: productionFrames, size: result.size, fps: result.fps, npm_install_github: 'passed', npm_registry_publication: false}, null, 2));
+  console.log(JSON.stringify({status: 'passed', spec, npx_help: 'passed', npx_init: 'passed', npx_install_skill: 'passed', npx_doctor: 'passed', npx_render_verify: 'passed', decoded_frames: result.decoded_frames, production_av_frames: productionFrames, size: result.size, fps: result.fps, npm_install_github: 'passed', optional_voice_checked: process.env.TEST_VOICE === '1', npm_registry_publication: false}, null, 2));
 } finally { fs.rmSync(tmp, {recursive: true, force: true}); }

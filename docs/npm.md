@@ -25,6 +25,8 @@ Use the same prefix with any command below. `--ignore-scripts` disables dependen
 | `sketch-video render --python /path/to/python story.json --out new-output` | Call the packaged Python renderer; supports its existing flags |
 | `sketch-video verify --python /path/to/python new-output` | Check captions and fully decode the generated video |
 | `fixture`, `audition`, `select-voice` | Make labelled test tones, inspect pre-generated auditions, record a specific listening decision |
+| `voice-doctor`, `verify-model`, `qwen`, `whisper` | Optional installed local CPU engines, pre-import guards and pinned weight checks; see [optional setup](optional-voice.md) |
+| `align-captions`, `splice-audio` | Estimated pause/ASR-supported caption times and quiet source splicing; optional audio dependencies |
 | `tts`, `asr` | Plan local adapter requests; execute only with `--execute` |
 | `prepare-audio`, `asr-check` | Measure WAVs, build the retimed storyboard/subtitle clock, review imported recognition differences |
 | `mux`, `verify-av` | Mix matching video/audio and check both complete streams |

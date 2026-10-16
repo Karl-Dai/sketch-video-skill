@@ -4,7 +4,7 @@ The silent path remains supported. `scripts/production.py` adds WAV import, audi
 
 ## Status
 
-An upstream production accepted a Qwen3-TTS Serena audition for that particular video. This is a production-specific listening decision, not a promise of generally natural speech. Full-film narration/Whisper small review is still being checked upstream; it is not this package's validation evidence. Automated tests use explicitly labelled sine-tone WAVs and a fake adapter. They validate plumbing, not pronunciation/model quality. The previously unsatisfactory Kokoro audition is not the selected voice.
+A completed upstream Linux production used Qwen3-TTS Serena and local unprompted Whisper small checks: 18 scenes, 54 continuous captions, 358.875 seconds, H.264/AAC and full decoding. This is source provenance, not a new inference run of this repository's wrappers. No sentence-by-sentence human listening result is claimed. The portable optional adapters are covered by synthetic/guard tests; see [setup, exact model revisions and validation limits](../docs/optional-voice.md). The earlier Kokoro audition is not the selected voice.
 
 ## Model-free audio contract
 
@@ -17,7 +17,7 @@ Paths are relative to the manifest. Inputs are decoded completely to mono 48 kHz
 ]}
 ```
 
-Scene ids cover the storyboard once, in order from 0. Optional caption times are reviewed clip-relative seconds, matching caption count and covering the measured duration continuously. They become integer frame boundaries shared by SRT and burn-in. Without them, caption timing remains a labelled text-length heuristic, not forced alignment.
+Scene ids cover the storyboard once, in order from 0. Optional caption times are provided clip-relative seconds (review required unless separately recorded), matching caption count and covering the measured duration continuously. They become integer frame boundaries shared by SRT and burn-in. Without them, caption timing remains a labelled text-length heuristic, not forced alignment.
 
 Whole-file input: `{"mode":"whole","clips":[{"wav":"whole.wav"}],"boundaries":[[0,3.7],[3.7,8.2]]}`. Supply one reviewed boundary per scene, covering the entire file without gaps. Optional `caption_times` is a list of per-scene lists relative to each extracted clip. The tool does not guess cuts from a recording.
 
@@ -25,7 +25,7 @@ Scene durations round upward to a frame boundary with a one-second minimum; only
 
 ## Local adapter contract
 
-Adapters are trusted executable configuration, not downloaded plugins. `tts` and `asr` default to planning files only. `--execute` explicitly runs the configured local argv without a shell. Supply installed software and local weights; do not use a remote model id that silently downloads. Hugging Face offline flags are set, but arbitrary code still needs review; these flags are not a network sandbox.
+Adapters are trusted executable configuration, not downloaded plugins. `tts` and `asr` default to planning files only. `--execute` explicitly runs the configured local argv without a shell. Supply installed software and local weights; do not use a remote model id that silently downloads. Hugging Face offline/token/telemetry flags and ORT_DISABLE_TELEMETRY are set before launching the subprocess, but arbitrary code still needs review; these flags are not a network sandbox.
 
 ```json
 {
@@ -54,3 +54,6 @@ The 0.6B CustomVoice Serena path does **not** support extra style instructions; 
 `verify-av` checks one H.264/yuv420p video and one mono 48 kHz AAC stream, frames, continuous captions, SRT consistency, AV start/duration deltas (≤80 ms), complete decoding of both streams, and PCM peak/RMS, silence and clipping. Peak/RMS is not integrated broadcast loudness certification. These checks do not prove semantic sync, pronunciation or naturalness: listen to the complete film and inspect boundaries.
 
 `package` creates a local media/cover/subtitle/metadata/checks directory with hashes and a review checklist. It sends nothing. A platform action needs an authorized browser/session, the exact account and explicit current user approval. Stop at login/CAPTCHA/uncertainty. `record-publication` stores caller evidence and authorization notes, including draft, failure, unknown and not-attempted outcomes. It neither uploads nor independently confirms a post, and provides no generic Xiaohongshu API.
+
+
+Concrete local Qwen/Whisper commands, pause/semantic alignment and quiet splicing are now provided in [the optional voice tools](../docs/optional-voice.md). `{python}` resolves to the selected interpreter and `{adapter_script}` to the bundled voice.py. No model download command exists.
