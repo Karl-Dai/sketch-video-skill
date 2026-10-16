@@ -11,7 +11,7 @@ Version `0.1.0` is distributed directly from this public GitHub repository. Ther
 Tested, immutable GitHub entry point (requires Node 22+ and Git):
 
 ```bash
-npx --yes --ignore-scripts --package="git+https://github.com/Karl-Dai/sketch-video-skill.git#3e7e94259864588ff5ac815d1cc608bb42ac532f" sketch-video --help
+npx --yes --ignore-scripts --package="git+https://github.com/Karl-Dai/sketch-video-skill.git#35c4e203f72cbdcdd0de29fdf7f9c9b20a8f79b9" sketch-video --help
 ```
 
 Use the same prefix with any command below. `--ignore-scripts` disables dependency lifecycle scripts; it does not suppress the explicitly requested CLI. This package defines no install/prepare hook in any case.
@@ -55,3 +55,5 @@ For the remote end-to-end test, set `GITHUB_NPX_SPEC` to the exact 40-character 
 Node 22+ is the declared minimum. Local validation uses macOS ARM64, Node 26.9.0 and npm 11.19.1; Linux CI checks Node 22/24. Windows has not been tested. No registry publication is planned. `README.md` is Chinese-first, `README_EN.md` is English, and `README.zh-CN.md` remains a synchronized Chinese compatibility entry.
 
 The implementation follows the official npm documentation for [bin/files metadata](https://docs.npmjs.com/cli/v11/configuring-npm/package-json/), [npm exec/npx](https://docs.npmjs.com/cli/v11/commands/npm-exec/), [Git/tarball package specs](https://docs.npmjs.com/cli/v11/using-npm/package-spec/) and [publishing](https://docs.npmjs.com/cli/v11/commands/npm-publish/).
+
+The current fixed GitHub commit also passes the model-free production path: fixture WAV import, retimed captions, mixing, 59-frame AV decode and an unuploaded local handoff. Enable `TEST_PRODUCTION=1` in the remote test to exercise it. Its output remains test tones, not validated speech.

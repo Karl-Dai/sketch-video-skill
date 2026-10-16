@@ -28,7 +28,8 @@ jobs:
       - name: Test CLI, npm whitelist and extracted tarball end to end
         env:
           TEST_FONT: /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
-          GITHUB_NPX_SPEC: git+https://github.com/Karl-Dai/sketch-video-skill.git#3e7e94259864588ff5ac815d1cc608bb42ac532f
+          TEST_PRODUCTION: '1'
+          GITHUB_NPX_SPEC: git+https://github.com/Karl-Dai/sketch-video-skill.git#35c4e203f72cbdcdd0de29fdf7f9c9b20a8f79b9
         run: |
           npm ci --ignore-scripts --no-audit --no-fund
           npm test
