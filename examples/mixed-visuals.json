@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "title": "ONE STORY, DIFFERENT VIEWS",
+  "scenes": [
+    {"title":"First choose the question.","duration":3,"layout":"tree","labels":["Audience","Evidence","Takeaway","Scope"],"captions":["Use branches only when the idea really branches."]},
+    {"title":"Show what changes over time.","duration":3,"layout":"timeline","labels":["Idea","Sketch","Render","Review"],"captions":["This is a hypothetical project timeline, not a historical claim."]},
+    {"title":"Put two choices side by side.","duration":3,"layout":"comparison","labels":["Silent","Narrated"],"details":["Read the captions","Hear reviewed speech"],"captions":["Compare the same dimensions. Do not invent scores or scales."]},
+    {"title":"Explain the order of work.","duration":3,"layout":"process","labels":["Write","Draw","Check"],"captions":["A sequence helps when the order matters."]},
+    {"title":"Return with a better draft.","duration":3,"layout":"cycle","labels":["Make","Inspect","Refine"],"captions":["Use a loop for recurring work. Keep the paper-and-ink style."]}
+  ]
+}

@@ -40,14 +40,19 @@ def load_story(path):
         duration = s.get('duration')
         if isinstance(duration, bool) or not isinstance(duration, (int, float)) or not math.isfinite(duration) or not 1 <= duration <= 120:
             raise ValueError('scene.duration must be finite, 1–120 seconds')
-        if s.get('layout') not in ('tree', 'process', 'cycle'):
-            raise ValueError('layout must be tree, process, or cycle')
+        if s.get('layout') not in ('tree', 'process', 'cycle', 'timeline', 'comparison'):
+            raise ValueError('layout must be tree, process, cycle, timeline, or comparison')
         labels = s.get('labels')
-        limit = 6 if s['layout'] == 'tree' else 4
+        limit = 6 if s['layout'] == 'tree' else (2 if s['layout'] == 'comparison' else 4)
         if not isinstance(labels, list) or not 2 <= len(labels) <= limit:
             raise ValueError(f'{s["layout"]} requires 2–{limit} labels')
         for label in labels:
             text(label, 'label')
+        if 'details' in s:
+            if s['layout'] != 'comparison' or not isinstance(s['details'], list) or len(s['details']) != 2:
+                raise ValueError('details requires exactly two comparison texts')
+            for detail in s['details']:
+                text(detail, 'comparison detail')
         captions = s.get('captions')
         if not isinstance(captions, list) or not captions:
             raise ValueError('each scene needs captions')
@@ -119,9 +124,9 @@ def find_font(explicit):
 def check_glyphs(story, path, index):
     with TTFont(path, fontNumber=index) as font:
         cmap = font.getBestCmap() or {}
-    strings = [story['title'], '0123456789 / . SILENT CODE-DRAWN']
+    strings = [story['title'], '0123456789 / . SILENT AUDIO CODE-DRAWN']
     for s in story['scenes']:
-        strings.extend([s['title'], *s['labels'], *s['captions']])
+        strings.extend([s['title'], *s['labels'], *s['captions'], *s.get('details', [])])
     missing = sorted({c for c in ''.join(strings) if not c.isspace() and ord(c) not in cmap})
     if missing:
         raise ValueError('font lacks glyphs: ' + ''.join(missing[:40]) + '; select a font covering your language')
@@ -175,6 +180,11 @@ class Painter:
             self.fit(s['title'], 84, 865, 2)
             for label in s['labels']:
                 self.fit(label, 38, 300, 2)
+            if s['layout'] == 'timeline':
+                for label in s['labels']:
+                    self.fit(label, 36, 220, 3)
+            for detail in s.get('details', []):
+                self.fit(detail, 36, 330, 3)
             for cap in s['captions']:
                 self.fit(cap, 43, 798, 3)
 
@@ -245,10 +255,38 @@ class Painter:
             for i, a in enumerate(points):
                 b = points[(i+1) % count]
                 mid = ((a[0]+b[0])/2, (a[1]+b[1])/2)
-                line(d, [a, mid, b], TEAL, 5, ease(u*2))
+                curve = [a, mid, b]
+                if count == 2:
+                    control = (540+(440 if i == 0 else -440), 1020)
+                    curve = [((1-q)**2*a[0]+2*(1-q)*q*control[0]+q*q*b[0], (1-q)**2*a[1]+2*(1-q)*q*control[1]+q*q*b[1]) for q in (j/40 for j in range(41))]
+                    mid = curve[20]
+                line(d, curve, TEAL, 5, ease(u*2))
                 angle = math.atan2(b[1]-a[1], b[0]-a[0])
                 head = [(mid[0]-18*math.cos(angle-.5), mid[1]-18*math.sin(angle-.5)), mid, (mid[0]-18*math.cos(angle+.5), mid[1]-18*math.sin(angle+.5))]
                 line(d, head, TEAL, 5, ease(u*2))
+        elif layout == 'timeline':
+            points = [(210+i*660/(count-1), 990) for i in range(count)]
+            line(d, points, TEAL, 7, ease(u*1.7))
+            for i, ((x, y), label) in enumerate(zip(points, labels)):
+                if u >= i*.10:
+                    d.ellipse((x-13, y-13, x+13, y+13), fill=CORAL if i == min(count-1, int(u*count)) else TEAL)
+                    line(d, [(x, y-15), (x, y-65)], INK, 3)
+                    self.text(d, f'{i+1:02}', x, y-120, 36, 220, color=CORAL, center=True)
+                    self.text(d, label, x, y+55, 36, 220, 3, center=True)
+        elif layout == 'comparison':
+            points = []
+            line(d, [(540, 740), (540, 1320)], LIGHT, 3)
+            for i, label in enumerate(labels):
+                x, color = 315+i*450, TEAL if i == 0 else CORAL
+                if u >= i*.15:
+                    d.rounded_rectangle((x-200, 790, x+200, 1290), 24, fill='#FBF7EB', outline=LIGHT, width=3)
+                    if i == 0:
+                        d.ellipse((x-32, 840, x+32, 904), outline=color, width=5)
+                    else:
+                        line(d, [(x-34, 900), (x, 838), (x+34, 900), (x-34, 900)], color, 5, ease(u*2))
+                    self.text(d, label, x, 960, 42, 330, 2, color=color, center=True)
+                    if s.get('details'):
+                        self.text(d, s['details'][i], x, 1095, 36, 330, 3, center=True)
         else:
             points = []
             line(d, [(540, 1335), (531, 1130), (548, 910), (540, 730)], INK, 11, ease(u*1.7))
@@ -256,13 +294,14 @@ class Painter:
                 x, y = 300 if i%2 == 0 else 780, 790 + (i//2)*200
                 points.append((x, y))
                 line(d, [(540, y+95), (540+(x-540)*.4, y+35), (x, y)], TEAL, 6, ease(u*2-i*.10))
-        for i, ((x, y), label) in enumerate(zip(points, labels)):
-            if u >= i*.10:
-                self.node(d, label, x, y, i == min(count-1, int(u*count)))
+        if layout not in ('timeline', 'comparison'):
+            for i, ((x, y), label) in enumerate(zip(points, labels)):
+                if u >= i*.10:
+                    self.node(d, label, x, y, i == min(count-1, int(u*count)))
         d.rounded_rectangle((88, 1460, 992, 1665), 24, fill='#EAE4D2')
         line(d, [(116, 1490), (116, 1635)], TEAL, 4)
         self.text(d, cap['text'], 146, 1496, 43, 798, 3)
-        self.text(d, 'NARRATED / CODE-DRAWN' if self.story.get('narrated') else 'SILENT / CODE-DRAWN', 100, 1707, 27, color=MUTE)
+        self.text(d, 'AUDIO / CODE-DRAWN' if self.story.get('narrated') else 'SILENT / CODE-DRAWN', 100, 1707, 27, color=MUTE)
         line(d, [(100, 1770), (980, 1770)], LIGHT, 5)
         line(d, [(100, 1770), (980, 1770)], TEAL, 6, (n+1)/clock['frames'])
         self.text(d, f'{n/clock["fps"]:.1f} / {clock["duration"]:.1f}', 100, 1810, 25, color=MUTE)

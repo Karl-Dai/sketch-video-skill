@@ -11,7 +11,7 @@ const help = `sketch-video ${pkg.version} — local hand-drawn explainers
 
 Usage:
   sketch-video --help | --version
-  sketch-video init <new-directory> [--example idea|water|hd]
+  sketch-video init <new-directory> [--example idea|water|hd|mixed]
   sketch-video install-skill <new-skill-directory>
   sketch-video doctor [--python <executable>]
   sketch-video render [--python <executable>] <story.json> --out <new-directory> [render options]
@@ -64,11 +64,11 @@ function init(args) {
   if (!dest || dest.startsWith('--')) fail('init requires a new directory');
   let example = 'idea';
   if (args.length) {
-    if (args.length !== 2 || args[0] !== '--example') fail('Expected --example idea|water|hd');
+    if (args.length !== 2 || args[0] !== '--example') fail('Expected --example idea|water|hd|mixed');
     example = args[1];
   }
-  const source = { idea: 'idea-to-video.json', water: 'water-cycle.zh.json', hd: 'smoke-hd.json' }[example];
-  if (!source) fail('Unknown example; choose idea, water or hd');
+  const source = { idea: 'idea-to-video.json', water: 'water-cycle.zh.json', hd: 'smoke-hd.json', mixed: 'mixed-visuals.json' }[example];
+  if (!source) fail('Unknown example; choose idea, water, hd or mixed');
   const created = createNewDirectory(dest, folder => {
     fs.copyFileSync(path.join(root, 'examples', source), path.join(folder, 'story.json'));
     for (const name of ['brief.md', 'sources.md']) fs.copyFileSync(path.join(root, 'examples', name), path.join(folder, name));

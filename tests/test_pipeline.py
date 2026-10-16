@@ -53,6 +53,31 @@ class PipelineTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'overflows'):
             Painter(self.story, timeline(self.story, 24), font, 0)
 
+    def test_mixed_layouts_and_comparison_contract(self):
+        import os
+        story = load_story(ROOT/'examples/mixed-visuals.json')
+        self.assertEqual({s['layout'] for s in story['scenes']}, {'tree','timeline','comparison','process','cycle'})
+        clock = timeline(story, 24)
+        self.assertEqual(clock['frames'], 360)
+        font = os.environ.get('TEST_FONT')
+        if font:
+            painter = Painter(story, clock, font, 0)
+            for scene in clock['scenes']:
+                for q in (0, .62, .99):
+                    n = scene['start_frame']+int((scene['end_frame']-scene['start_frame'])*q)
+                    self.assertEqual(painter.frame(n).size, (1080,1920))
+            pair = copy.deepcopy(story)
+            pair['scenes'] = [dict(title='A repeated process.', duration=3, layout='cycle', labels=['A','B'], captions=['Two paths stay distinct.'])]
+            image = Painter(pair, timeline(pair,24), font,0).frame(48)
+            for x in (320,760):
+                self.assertEqual(image.getpixel((x,1020)), (53,125,120))
+        invalid = copy.deepcopy(story)
+        invalid['scenes'][2]['labels'].append('Third')
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)/'bad.json'
+            target.write_text(json.dumps(invalid))
+            with self.assertRaises(ValueError): load_story(target)
+
 
 if __name__ == '__main__':
     unittest.main()

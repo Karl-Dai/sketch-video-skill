@@ -15,6 +15,8 @@ Research material claims before presenting them as facts. Prefer primary sources
 
 Write a narrative with a question, mechanism or causal chain, and a takeaway. Allocate scene durations according to reading or speaking time. One visual idea per scene is a useful default, not a fixed scene count. A long topic needs more time or a narrower scope.
 
+Storyboard first, then choose the visual grammar: `tree` for real branches, `process` for ordered steps, `cycle` for recurrence, `timeline` for dated developments, `comparison` for two alternatives on shared dimensions. Mix forms when the explanation needs them; a hand-drawn style does not mean a tree on every page. Scene illustrations and local zooms require custom drawing-code extensions and tests; they are not built-in layouts. See [the mixed example](examples/mixed-visuals.json).
+
 ## Build and preview
 
 Read [references/storyboard.md](references/storyboard.md) for the JSON contract and layout constraints. Use [examples/idea-to-video.json](examples/idea-to-video.json) or [examples/water-cycle.zh.json](examples/water-cycle.zh.json) as a starting point. Read [references/workflow.md](references/workflow.md) when expanding animation or planning longer productions.

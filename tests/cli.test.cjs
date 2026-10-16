@@ -28,6 +28,9 @@ test('init copies real examples and refuses existing directories and symlinks', 
     assert.notEqual(run('init', link).status, 0);
     assert.notEqual(run('init', path.join(tmp, 'bad'), '--example', '../secret').status, 0);
     assert.equal(fs.existsSync(path.join(tmp, 'bad')), false);
+    const mixed = path.join(tmp, 'mixed');
+    assert.equal(run('init', mixed, '--example', 'mixed').status, 0);
+    assert.equal(JSON.parse(fs.readFileSync(path.join(mixed, 'story.json'))).scenes.length, 5);
   } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
 });
 

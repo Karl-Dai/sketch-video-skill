@@ -8,3 +8,5 @@ Checked: 2026-10-16. Only prose facts are paraphrased; no source artwork is reus
 | 2 | Water infiltrates soil and can recharge groundwater. | Same USGS page, “Fluxes move water between pools” | Not all infiltrating water immediately becomes groundwater. |
 
 The English idea-to-video demo describes this repository's workflow rather than making scientific claims.
+
+The mixed-visuals example is a hypothetical project workflow, explicitly labelled as such. It makes no sourced historical or quantitative comparison claims.

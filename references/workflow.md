@@ -6,7 +6,7 @@ Keep a brief, claim ledger, script, storyboard and list of teaching boundaries. 
 
 Estimate pacing from a short read-through, not a universal characters-per-second number. Leave time to see a newly revealed connection. If the script does not fit, shorten the message or extend duration. Shared captions and narration text prevent silent edits from drifting apart.
 
-The JSON layouts are reusable diagram primitives: trees for branching relationships, vertical flows for sequences, loops for recurring processes. They do not simulate physical systems or infer causality. Text and diagrams must agree. For subject-specific work, adapt `Painter.frame` or add a layout and its input validation together. Keep editorial data separate from drawing geometry.
+Storyboard before choosing a drawing form. Implemented JSON layouts are `tree` for branches, `process` for steps, `cycle` for recurrence, `timeline` for historical/project milestones, and `comparison` for two alternatives on the same dimensions. They do not infer causality or simulate physical systems. Mix forms as needed, as in [the mixed-visual example](../examples/mixed-visuals.json). Scene illustration and local zoom are custom extensions, not shipped layout names: extend `Painter.frame`, validation, glyph/overflow checks and representative frame tests together. Keep editorial content separate from geometry.
 
 ## Preserve the useful drawing mechanics
 

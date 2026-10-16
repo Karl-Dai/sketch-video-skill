@@ -6,13 +6,13 @@ A question becomes a story. The story becomes a diagram. The diagram comes to li
 
 [简体中文](README.md) · [Agent instructions](SKILL.md) · [12-second demo](docs/demo.mp4) · [Validation](docs/validation.md)
 
-![Three code-drawn scenes: story tree, animation pipeline, review loop](docs/preview.jpg)
+![Mixed visuals: branches, timeline, comparison, steps and a cycle](docs/mixed-preview.jpg)
 
 ## Paper, ink, and a real pipeline
 
 A reusable Agent Skill and a small local renderer for educational sketch videos. It carries forward drawing and quality-control methods from an earlier 38-second prototype and five-minute Chinese explainer, then opens them up to new topics through editable JSON.
 
-- **Draw with code:** warm paper, ink strokes, progressive lines and animated tree, process and cycle diagrams.
+- **Draw with code:** warm paper, ink strokes, progressive lines and animated tree, process, cycle, timeline and comparison diagrams.
 - **Keep words in sync:** burn-in captions, SRT and narration text come from one frame clock.
 - **See what you made:** start/middle/end frames, contact sheets and full-video decode checks.
 - **Run locally:** Python + Pillow + fontTools + FFmpeg. Rendering the examples needs no API key or model download.
@@ -83,7 +83,7 @@ The Skill covers brief → research → script → storyboard → animation → 
 
 1. Start with [a brief](examples/brief.md) and a claim-to-source ledger.
 2. Edit titles, scene durations, labels and captions in [an example JSON](examples/idea-to-video.json).
-3. Choose `tree`, `process` or `cycle`; extend the drawing code for richer visuals.
+3. Storyboard first: choose `tree`, `process`, `cycle`, `timeline` or `comparison` according to meaning. Mix forms; scene illustrations and local zooms need custom drawing code.
 4. Preview, inspect, render and verify. Keep script, caption and timing edits together.
 
 Read the [storyboard contract](references/storyboard.md), [production notes](references/workflow.md) and [measured validation results](docs/validation.md). Caption timing is a text-length heuristic, not speech alignment. The baseline is single-process; no real-time or long-video speedup is promised.
@@ -110,6 +110,8 @@ ASR is optional; use an existing transcript or an installed adapter, never an au
 Serena was accepted in an upstream Qwen3-TTS audition for one production. Full-film/Whisper checks are still in progress there; no universal naturalness or platform-speed claim is made. The 0.6B CustomVoice path does not support extra style instructions. Model sizes, licenses and unknown costs are explicit in the audio reference.
 
 `package` sends nothing. After reviewing facts, rights, privacy, account and AV quality, a separately authorized browser/manual action may upload. Record observed success, draft, failure or uncertainty with `record-publication`. No generic Xiaohongshu publishing API is claimed.
+
+[Watch the 15-second mixed-layout demo](docs/mixed-demo.mp4), or use `init my-video --example mixed`. Its project timeline is explicitly hypothetical, not a historical claim.
 
 ## License and scope
 

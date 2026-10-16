@@ -42,6 +42,8 @@ jobs:
           python scripts/verify.py build/water
           python scripts/render.py examples/smoke-hd.json --out build/hd --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
           python scripts/verify.py build/hd
+          python scripts/render.py examples/mixed-visuals.json --out build/mixed --size 360x640 --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+          python scripts/verify.py build/mixed
   node-22:
     runs-on: ubuntu-24.04
     timeout-minutes: 5

@@ -16,7 +16,7 @@
     "scripts/render.py", "scripts/verify.py", "scripts/check_package.py", "scripts/production.py",
     "references/*.md", "examples/*.json", "examples/*.md",
     "requirements.txt", "requirements-dev.txt", "README.zh-CN.md", "README_EN.md", "NOTICE.md", "LICENSE",
-    "docs/preview.jpg", "docs/water-preview.jpg", "docs/demo.mp4", "docs/water-cycle.mp4",
+    "docs/preview.jpg", "docs/water-preview.jpg", "docs/demo.mp4", "docs/water-cycle.mp4", "docs/mixed-preview.jpg", "docs/mixed-demo.mp4",
     "docs/validation.md", "docs/validation-results.json", "docs/npm.md", "docs/production.md"
   ],
   "scripts": {
