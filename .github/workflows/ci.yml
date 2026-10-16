@@ -1,0 +1,32 @@
+name: Render and verify
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install rendering dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-noto-cjk
+          python -m pip install -r requirements-dev.txt
+      - name: Validate package and regression tests
+        env:
+          TEST_FONT: /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+        run: |
+          python scripts/check_package.py
+          python -m unittest discover -s tests -v
+      - name: Render and fully decode English, Chinese and HD examples
+        run: |
+          python scripts/render.py examples/idea-to-video.json --out build/demo --size 360x640 --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+          python scripts/verify.py build/demo
+          python scripts/render.py examples/water-cycle.zh.json --out build/water --size 360x640 --font /usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc
+          python scripts/verify.py build/water
+          python scripts/render.py examples/smoke-hd.json --out build/hd --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+          python scripts/verify.py build/hd

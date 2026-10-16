@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "title": "一滴水的旅行",
+  "scenes": [
+    {
+      "title": "水，在天地之间流动。",
+      "duration": 6,
+      "layout": "cycle",
+      "labels": ["蒸发", "凝结", "降水"],
+      "captions": ["太阳能驱动蒸发。水汽凝结形成云，降水回到地表。"]
+    },
+    {
+      "title": "这只是循环的一部分。",
+      "duration": 6,
+      "layout": "process",
+      "labels": ["地表", "入渗", "地下水"],
+      "captions": ["水渗入土壤，也可能补给地下水。"]
+    }
+  ]
+}

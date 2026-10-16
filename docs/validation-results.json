@@ -1,0 +1,86 @@
+{
+  "english": {
+    "render": {
+      "frames": 288,
+      "duration": 12.0,
+      "fps": 24,
+      "size": "360x640",
+      "scenes": 3,
+      "captions": 3,
+      "silent": true,
+      "preview_only": false,
+      "render_seconds": 4.323,
+      "bytes": 75117,
+      "sha256": "c8b2fd3ae527aed8a6f660f56bf5a56d1f7f0e80ed8f4dde5cd2a83390390711"
+    },
+    "verification": {
+      "status": "passed",
+      "decoded_frames": 288,
+      "duration": 12.0,
+      "fps": 24,
+      "size": "360x640",
+      "codec": "h264",
+      "pixel_format": "yuv420p",
+      "audio_streams": 0,
+      "captions": 3,
+      "caption_clock": "contiguous and identical to SRT",
+      "visual_review": "manual review required; see scene JPGs and contact sheets"
+    }
+  },
+  "chinese": {
+    "render": {
+      "frames": 288,
+      "duration": 12.0,
+      "fps": 24,
+      "size": "360x640",
+      "scenes": 2,
+      "captions": 2,
+      "silent": true,
+      "preview_only": false,
+      "render_seconds": 3.337,
+      "bytes": 54421,
+      "sha256": "da7bdb0a36d0b43f1dff4a42e38b63e13943a0e374d94d375266e8a50a3d12cf"
+    },
+    "verification": {
+      "status": "passed",
+      "decoded_frames": 288,
+      "duration": 12.0,
+      "fps": 24,
+      "size": "360x640",
+      "codec": "h264",
+      "pixel_format": "yuv420p",
+      "audio_streams": 0,
+      "captions": 2,
+      "caption_clock": "contiguous and identical to SRT",
+      "visual_review": "manual review required; see scene JPGs and contact sheets"
+    }
+  },
+  "hd-smoke": {
+    "render": {
+      "frames": 48,
+      "duration": 2.0,
+      "fps": 24,
+      "size": "1080x1920",
+      "scenes": 1,
+      "captions": 1,
+      "silent": true,
+      "preview_only": false,
+      "render_seconds": 0.394,
+      "bytes": 91046,
+      "sha256": "364420b535ce569ea3877e47dfa49347c1874f548ee1b1e5c5e39b499f5ad891"
+    },
+    "verification": {
+      "status": "passed",
+      "decoded_frames": 48,
+      "duration": 2.0,
+      "fps": 24,
+      "size": "1080x1920",
+      "codec": "h264",
+      "pixel_format": "yuv420p",
+      "audio_streams": 0,
+      "captions": 1,
+      "caption_clock": "contiguous and identical to SRT",
+      "visual_review": "manual review required; see scene JPGs and contact sheets"
+    }
+  }
+}

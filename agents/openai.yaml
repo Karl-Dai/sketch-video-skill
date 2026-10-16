@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sketch Video"
+  short_description: "Code-drawn explainer videos, captions and QA"
+  default_prompt: "Use $sketch-video-skill to create a researched hand-drawn explainer video with synchronized captions and inspectable QA results."

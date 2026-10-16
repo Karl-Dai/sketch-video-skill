@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "title": "IDEA TO EXPLAINER",
+  "scenes": [
+    {
+      "title": "Give your idea a story.",
+      "duration": 4,
+      "layout": "tree",
+      "labels": ["Question", "Evidence", "Analogy", "Takeaway"],
+      "captions": ["Start with one question. Build a story that answers it."]
+    },
+    {
+      "title": "Make the logic visible.",
+      "duration": 4,
+      "layout": "process",
+      "labels": ["Storyboard", "Draw + animate", "Add captions"],
+      "captions": ["Connect each scene, drawing and caption to the same timeline."]
+    },
+    {
+      "title": "Render. Inspect. Refine.",
+      "duration": 4,
+      "layout": "cycle",
+      "labels": ["Render", "Inspect", "Refine"],
+      "captions": ["Check the key frames. Decode the whole video. Then share it."]
+    }
+  ]
+}

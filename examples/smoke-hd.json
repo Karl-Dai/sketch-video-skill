@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "title": "HD SMOKE TEST",
+  "scenes": [{
+    "title": "One clock. Every frame.",
+    "duration": 2,
+    "layout": "process",
+    "labels": ["Render", "Verify"],
+    "captions": ["A two-second encoding check."]
+  }]
+}
