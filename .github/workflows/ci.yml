@@ -11,6 +11,9 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0, Node 24
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
       - name: Install rendering dependencies
         run: |
           sudo apt-get update
@@ -22,6 +25,15 @@ jobs:
         run: |
           python scripts/check_package.py
           python -m unittest discover -s tests -v
+      - name: Test CLI, npm whitelist and extracted tarball end to end
+        env:
+          TEST_FONT: /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+          GITHUB_NPX_SPEC: git+https://github.com/Karl-Dai/sketch-video-skill.git#3e7e94259864588ff5ac815d1cc608bb42ac532f
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm test
+          TEST_PYTHON="$(command -v python)" npm run test:pack
+          TEST_PYTHON="$(command -v python)" npm run test:github
       - name: Render and fully decode English, Chinese and HD examples
         run: |
           python scripts/render.py examples/idea-to-video.json --out build/demo --size 360x640 --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
@@ -30,3 +42,14 @@ jobs:
           python scripts/verify.py build/water
           python scripts/render.py examples/smoke-hd.json --out build/hd --font /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
           python scripts/verify.py build/hd
+  node-22:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm test
+      - run: npm run test:pack

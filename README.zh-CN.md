@@ -20,7 +20,26 @@
 
 默认输出为 **1080×1920、24 fps、H.264 无声竖屏视频**。事实核查、叙事和画面审阅由 Agent 与使用者完成；渲染器不会自动把一句提示变成经过核查的完整课程。内置三种通用图示，更具体的学科插画需要扩展绘图代码。
 
-## 先跑一个最小示例
+## 直接用 npx，不需要 npm 登录
+
+需要 Node 22+ 和 Git。以下命令固定到包含 CLI 的提交，直接从公开 GitHub 拉取运行，不依赖 npm registry 发布：
+
+```bash
+npx --yes --ignore-scripts --package="git+https://github.com/Karl-Dai/sketch-video-skill.git#3e7e94259864588ff5ac815d1cc608bb42ac532f" sketch-video --help
+```
+
+把 `--help` 换成 `init my-video --example water`，即可创建中文分镜示例；换成 `install-skill /path/to/new-skill-directory`，则会把技能复制到指定的新目录。**运行 CLI 和安装 Agent Skill 是两件事**，都不会自动安装 Python、FFmpeg 或模型。完整语法见[命令说明与实测范围](docs/npm.md)。
+
+也可以把同一版本安装到自己的项目中，方便反复调用：
+
+```bash
+npm install --ignore-scripts "git+https://github.com/Karl-Dai/sketch-video-skill.git#3e7e94259864588ff5ac815d1cc608bb42ac532f"
+npm exec -- sketch-video init my-video --example water
+```
+
+配置好 Python 环境后，用 `npm exec -- sketch-video doctor --python /path/to/python` 检查依赖，再运行 `npm exec -- sketch-video render --python /path/to/python my-video/story.json --out new-output --font /path/to/font.ttc`，最后用 `npm exec -- sketch-video verify --python /path/to/python new-output` 完整解码检查。Node 仅包装现有 Python 渲染器。包配置的 `private: true` 用于防止误发 npm registry，GitHub 源码仍然公开。
+
+## 也可直接运行 Python
 
 需要 Python 3.10+、带 `libx264` 的 FFmpeg/ffprobe，以及本地 TTF/OTF/TTC 字体。请先用系统包管理器安装 FFmpeg。英文可用 DejaVu Sans，中文可用 Noto Sans CJK；仓库不附带字体或可执行程序。
 

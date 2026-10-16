@@ -1,0 +1,39 @@
+// Opt-in remote test against an explicit, immutable commit of this repository.
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const { spawnSync } = require('node:child_process');
+const spec = process.env.GITHUB_NPX_SPEC;
+assert.match(spec || '', /^git\+https:\/\/github\.com\/Karl-Dai\/sketch-video-skill\.git#[a-f0-9]{40}$/);
+assert.ok(process.env.TEST_PYTHON && process.env.TEST_FONT, 'Set TEST_PYTHON and TEST_FONT');
+const npm = process.env.npm_execpath;
+const npx = path.join(path.dirname(npm), 'npx-cli.js');
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'sketch-github-'));
+const env = { ...process.env, npm_config_cache: path.join(tmp, 'cache'), npm_config_update_notifier: 'false' };
+function run(command, args, cwd = tmp) {
+  const r = spawnSync(command, args, { cwd, env, encoding: 'utf8', shell: false });
+  assert.equal(r.status, 0, `${path.basename(command)} failed: ${r.stderr}\n${r.stdout}`);
+  return r.stdout;
+}
+const cli = (...args) => run(process.execPath, [npx, '--yes', '--ignore-scripts', `--package=${spec}`, 'sketch-video', ...args]);
+try {
+  assert.match(cli('--help'), /install-skill/);
+  const project = path.join(tmp, 'new project');
+  cli('init', project, '--example', 'hd');
+  const skill = path.join(tmp, 'new skill');
+  cli('install-skill', skill);
+  assert.ok(fs.existsSync(path.join(skill, 'SKILL.md')));
+  const python = path.resolve(process.env.TEST_PYTHON);
+  cli('doctor', '--python', python);
+  const out = path.join(tmp, 'new output');
+  cli('render', '--python', python, path.join(project, 'story.json'), '--out', out, '--font', process.env.TEST_FONT);
+  cli('verify', '--python', python, out);
+  const result = JSON.parse(fs.readFileSync(path.join(out, 'verification.json')));
+  assert.equal(result.decoded_frames, 48);
+  const consumer = path.join(tmp, 'npm consumer');
+  fs.mkdirSync(consumer);
+  run(process.execPath, [npm, 'install', '--ignore-scripts', '--no-audit', '--no-fund', spec], consumer);
+  assert.equal(run(process.execPath, [npm, 'exec', '--offline', '--', 'sketch-video', '--version'], consumer).trim(), '0.1.0');
+  console.log(JSON.stringify({status: 'passed', spec, npx_help: 'passed', npx_init: 'passed', npx_install_skill: 'passed', npx_doctor: 'passed', npx_render_verify: 'passed', decoded_frames: result.decoded_frames, size: result.size, fps: result.fps, npm_install_github: 'passed', npm_registry_publication: false}, null, 2));
+} finally { fs.rmSync(tmp, {recursive: true, force: true}); }

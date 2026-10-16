@@ -20,7 +20,26 @@ A reusable Agent Skill and a small local renderer for educational sketch videos.
 
 Default output is a **silent**, vertical 1080×1920 H.264 video at 24 fps. Research, storytelling and visual review are Agent/human work; the renderer does not automatically turn a prompt into a verified lesson. Custom subject-specific illustrations require drawing-code changes.
 
-## Try it
+## Run with npx — no npm login
+
+Node 22+ and Git are needed for this direct GitHub command. This immutable commit contains the CLI; no npm registry publication is involved:
+
+```bash
+npx --yes --ignore-scripts --package="git+https://github.com/Karl-Dai/sketch-video-skill.git#3e7e94259864588ff5ac815d1cc608bb42ac532f" sketch-video --help
+```
+
+Replace `--help` with `init my-video --example water` to create a Chinese storyboard, or `install-skill /path/to/new-skill-directory` to install the Agent Skill. Running the CLI and installing a Skill are separate actions. Neither installs Python, FFmpeg or models. [Command reference and tested scope](docs/npm.md).
+
+For repeat use, install the same explicit GitHub package into your project:
+
+```bash
+npm install --ignore-scripts "git+https://github.com/Karl-Dai/sketch-video-skill.git#3e7e94259864588ff5ac815d1cc608bb42ac532f"
+npm exec -- sketch-video init my-video --example water
+```
+
+After setting up a Python environment, run `npm exec -- sketch-video doctor --python /path/to/python`, then `npm exec -- sketch-video render --python /path/to/python my-video/story.json --out new-output --font /path/to/font.ttc`, followed by `npm exec -- sketch-video verify --python /path/to/python new-output`. The wrapper calls the existing Python renderer. For registry-free distribution, the manifest sets `private: true`; the GitHub repository remains public.
+
+## Run Python directly
 
 Requirements: Python 3.10+, FFmpeg/ffprobe with the `libx264` encoder, and a local TTF/OTF/TTC font. Install FFmpeg with your system package manager first. Linux users can use DejaVu Sans for English and Noto Sans CJK for Chinese. Fonts and executables are not bundled.
 

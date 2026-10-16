@@ -8,6 +8,14 @@ Version `0.1.0` is distributed directly from this public GitHub repository. Ther
 
 ## Commands
 
+Tested, immutable GitHub entry point (requires Node 22+ and Git):
+
+```bash
+npx --yes --ignore-scripts --package="git+https://github.com/Karl-Dai/sketch-video-skill.git#3e7e94259864588ff5ac815d1cc608bb42ac532f" sketch-video --help
+```
+
+Use the same prefix with any command below. `--ignore-scripts` disables dependency lifecycle scripts; it does not suppress the explicitly requested CLI. This package defines no install/prepare hook in any case.
+
 | Command | Effect |
 | --- | --- |
 | `sketch-video --help` / `--version` | Show usage/version, without Python |
@@ -36,6 +44,8 @@ npm test
 TEST_PYTHON=/path/to/python TEST_FONT=/path/to/font.ttf npm run test:pack
 npm pack --ignore-scripts --dry-run
 ```
+
+For the remote end-to-end test, set `GITHUB_NPX_SPEC` to the exact 40-character GitHub commit spec above, `TEST_PYTHON` to your environment's Python and `TEST_FONT` to a local font, then run `npm run test:github`. It runs actual npx help, init, Skill installation, doctor, rendering and verification from the remote package, and separately checks `npm install` from GitHub. Local execution passed with 48 fully decoded frames at 1080×1920/24 fps. A fresh temporary npm cache is used and removed with the test workspace.
 
 Node 22+ is the declared minimum. Local validation uses macOS ARM64, Node 26.9.0 and npm 11.19.1; Linux CI checks additional Node versions. Windows has not been tested. Registry installation cannot be validated before an authorized registry publication.
 

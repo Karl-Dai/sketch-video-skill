@@ -21,6 +21,8 @@ Read [references/storyboard.md](references/storyboard.md) for the JSON contract 
 
 Run scripts relative to this skill directory; keep project inputs and generated outputs in the user's chosen project folder. Python 3.10+, Pillow, fontTools, a suitable local font, and FFmpeg with libx264 are required for video. See [README.md](README.md) for setup. Do not install models or system packages without authorization.
 
+An optional Node CLI wraps the same scripts; see [docs/npm.md](docs/npm.md) for the tested GitHub npx entry point, `doctor`, `init`, and explicit Skill installation. Running npx does not register a Skill or install Python dependencies automatically.
+
 ```bash
 python scripts/render.py /path/to/story.json --out /path/to/new-preview --font /path/to/font.ttf --preview-only
 python scripts/render.py /path/to/story.json --out /path/to/new-render --font /path/to/font.ttf

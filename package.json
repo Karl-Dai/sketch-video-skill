@@ -21,6 +21,7 @@
   ],
   "scripts": {
     "test": "node --test tests/cli.test.cjs",
-    "test:pack": "node tests/npm-pack.cjs"
+    "test:pack": "node tests/npm-pack.cjs",
+    "test:github": "node tests/github-npx.cjs"
   }
 }
