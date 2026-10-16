@@ -38,7 +38,7 @@ try {
   run(process.execPath, [npm, 'install', archive, '--ignore-scripts', '--offline', '--no-audit', '--no-fund'], installed);
   assert.equal(run(process.execPath, [npm, 'exec', '--offline', '--', 'sketch-video', '--version'], installed).trim(), pkg.version);
   assert.match(run(process.execPath, [npm, 'exec', '--offline', '--yes', `--package=${archive}`, '--', 'sketch-video', '--help']), /install-skill/);
-  let decodedFrames = null;
+  let decodedFrames = null, productionFrames = null;
   if (process.env.TEST_PYTHON && process.env.TEST_FONT) {
     const python = path.resolve(process.env.TEST_PYTHON);
     run(process.execPath, [cli, 'doctor', '--python', python]);
@@ -47,6 +47,21 @@ try {
     run(process.execPath, [cli, 'verify', '--python', python, out]);
     decodedFrames = JSON.parse(fs.readFileSync(path.join(out, 'verification.json'))).decoded_frames;
     assert.equal(decodedFrames, 48);
+    const call = (...args) => run(process.execPath, [cli, ...args, '--python', python]);
+    const inputs = path.join(tmp, 'audio inputs');
+    call('fixture', '--out', inputs);
+    const prepared = path.join(tmp, 'prepared audio');
+    call('prepare-audio', path.join(inputs, 'story.json'), '--audio', path.join(inputs, 'audio.json'), '--out', prepared);
+    const animation = path.join(tmp, 'animation');
+    call('render', path.join(prepared, 'retimed.json'), '--out', animation, '--font', process.env.TEST_FONT, '--size', '360x640');
+    const final = path.join(tmp, 'final');
+    call('mux', animation, prepared, '--out', final);
+    call('verify-av', final);
+    const handoff = path.join(tmp, 'handoff');
+    call('package', final, '--metadata', path.join(inputs, 'publication.json'), '--out', handoff);
+    productionFrames = JSON.parse(fs.readFileSync(path.join(final, 'av-verification.json'))).decoded_frames;
+    assert.equal(productionFrames, 59);
+    assert.equal(JSON.parse(fs.readFileSync(path.join(handoff, 'handoff.json'))).uploaded, false);
   }
-  console.log(JSON.stringify({ status: 'passed', version: pkg.version, tarball_files: packed.files.length, tarball_bytes: packed.size, unpacked_bytes: packed.unpackedSize, whitelist: 'passed', extracted_cli: 'passed', npm_install_local_tarball: 'passed', npm_exec_local_tarball: 'passed', decoded_frames: decodedFrames }, null, 2));
+  console.log(JSON.stringify({ status: 'passed', version: pkg.version, tarball_files: packed.files.length, tarball_bytes: packed.size, unpacked_bytes: packed.unpackedSize, whitelist: 'passed', extracted_cli: 'passed', npm_install_local_tarball: 'passed', npm_exec_local_tarball: 'passed', decoded_frames: decodedFrames, production_av_frames: productionFrames }, null, 2));
 } finally { fs.rmSync(tmp, { recursive: true, force: true }); }

@@ -55,6 +55,8 @@ def load_story(path):
             text(caption, 'caption')
         if duration / len(captions) < 0.5:
             raise ValueError('too many captions for scene duration')
+    if 'narrated' in data and not isinstance(data['narrated'], bool):
+        raise ValueError('narrated must be a boolean')
     return data
 
 
@@ -66,10 +68,21 @@ def timeline(story, fps):
         count = round(source['duration'] * fps)
         scene['end_frame'] = cursor + count
         weights = [len(c) + 8 for c in source['captions']]
+        explicit = source.get('caption_frames')
+        if explicit is not None:
+            if not isinstance(explicit, list) or len(explicit) != len(weights):
+                raise ValueError('caption_frames must match captions')
+            last = 0
+            for span in explicit:
+                if not isinstance(span, list) or len(span) != 2 or any(type(v) is not int for v in span) or span[0] != last or span[1] <= last:
+                    raise ValueError('caption_frames must be contiguous positive integer intervals')
+                last = span[1]
+            if last != count:
+                raise ValueError('caption_frames must cover the scene at the selected fps')
         used, start = 0, cursor
         for j, (caption, weight) in enumerate(zip(source['captions'], weights)):
             used += weight
-            end = cursor + (count if j == len(weights) - 1 else round(count * used / sum(weights)))
+            end = cursor + (explicit[j][1] if explicit is not None else (count if j == len(weights) - 1 else round(count * used / sum(weights))))
             if end <= start:
                 raise ValueError('caption interval shorter than one frame')
             captions.append(dict(scene=i, start_frame=start, end_frame=end, text=caption))
@@ -249,7 +262,7 @@ class Painter:
         d.rounded_rectangle((88, 1460, 992, 1665), 24, fill='#EAE4D2')
         line(d, [(116, 1490), (116, 1635)], TEAL, 4)
         self.text(d, cap['text'], 146, 1496, 43, 798, 3)
-        self.text(d, 'SILENT / CODE-DRAWN', 100, 1707, 27, color=MUTE)
+        self.text(d, 'NARRATED / CODE-DRAWN' if self.story.get('narrated') else 'SILENT / CODE-DRAWN', 100, 1707, 27, color=MUTE)
         line(d, [(100, 1770), (980, 1770)], LIGHT, 5)
         line(d, [(100, 1770), (980, 1770)], TEAL, 6, (n+1)/clock['frames'])
         self.text(d, f'{n/clock["fps"]:.1f} / {clock["duration"]:.1f}', 100, 1810, 25, color=MUTE)
@@ -262,7 +275,7 @@ def write_editorial(out, story, clock):
     for i, c in enumerate(clock['captions'], 1):
         srt.extend([str(i), f'{timestamp(c["start_frame"], clock["fps"])} --> {timestamp(c["end_frame"], clock["fps"])}', c['text'], ''])
     (out/'captions.srt').write_text('\n'.join(srt)+'\n', encoding='utf-8')
-    script = [story['title'], 'Silent render. Narration text only; no voice generated.', '']
+    script = [story['title'], 'Narration text. Audio is assembled separately.' if story.get('narrated') else 'Silent render. Narration text only; no voice generated.', '']
     for s in clock['scenes']:
         script.extend([s['title'], *s['captions'], ''])
     (out/'narration.txt').write_text('\n'.join(script), encoding='utf-8')

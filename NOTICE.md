@@ -15,5 +15,6 @@ The MIT license applies only to this repository's original code, prose and code-
 | [Noto Sans CJK](https://github.com/notofonts/noto-cjk/blob/main/Sans/LICENSE) | Suggested Chinese font; SIL OFL 1.1. Not bundled. |
 | Local system fonts | Used only from the user's machine; retain the applicable vendor terms. Not bundled. |
 | TTS implementations, models and voices | Optional, experimental; check each exact distribution separately. None bundled. |
+| [Qwen3-TTS](https://github.com/QwenLM/Qwen3-TTS) / [Whisper](https://github.com/openai/whisper) | Optional external engines/checkpoints under their respective terms (upstream Apache-2.0 / MIT). This project provides generic local adapter interfaces only; no upstream code or weights are vendored. Exact model/voice metadata and costs must be recorded. |
 
 Public demo raster/video previews use locally available fonts at render time. Their inclusion does not grant a right to redistribute the underlying font software. The tested fonts and environment are recorded in [docs/validation.md](docs/validation.md).

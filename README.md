@@ -1,47 +1,47 @@
 # Sketch Video Skill
 
-**Turn ideas into hand-drawn explainer videos with code.**
+**从一个想法，到一支有逻辑、有动画、有字幕的科普视频。**
 
-A question becomes a story. The story becomes a diagram. The diagram comes to life—with captions you can inspect and a video you can reproduce.
+用代码把知识画出来：纸张底色、手绘线条、逐步生长的关系图，再配上一条可以核对的字幕时间线。
 
-[简体中文](README.zh-CN.md) · [Agent instructions](SKILL.md) · [12-second demo](docs/demo.mp4) · [Validation](docs/validation.md)
+[English](README_EN.md) · [Skill 入口](SKILL.md) · [12 秒演示](docs/demo.mp4) · [中文示例](docs/water-cycle.mp4) · [实测记录](docs/validation.md)
 
-![Three code-drawn scenes: story tree, animation pipeline, review loop](docs/preview.jpg)
+![三个分镜：叙事树、制作流程、检查循环](docs/preview.jpg)
 
-## Paper, ink, and a real pipeline
+## 不只做出画面，也把过程交出来
 
-A reusable Agent Skill and a small local renderer for educational sketch videos. It carries forward drawing and quality-control methods from an earlier 38-second prototype and five-minute Chinese explainer, then opens them up to new topics through editable JSON.
+这是一套可复用的 Agent Skill，附带可独立运行的本地渲染器。它从此前完成的 38 秒样片、五分钟中文手绘科普片中提炼绘图、时间线和质检方法，再用 JSON 分镜扩展到其他主题。
 
-- **Draw with code:** warm paper, ink strokes, progressive lines and animated tree, process and cycle diagrams.
-- **Keep words in sync:** burn-in captions, SRT and narration text come from one frame clock.
-- **See what you made:** start/middle/end frames, contact sheets and full-video decode checks.
-- **Run locally:** Python + Pillow + fontTools + FFmpeg. Rendering the examples needs no API key or model download.
-- **Explain in your language:** English and Simplified Chinese examples, explicit fonts and missing-glyph checks.
+- **代码原创绘图**：固定纸张纹理、渐进描线、树形关系、流程和循环动画。
+- **字幕共用时钟**：画内字幕、SRT、讲稿来自同一份帧时间线。
+- **结果可以检查**：每镜开始／中段／结束图、联系表、完整视频解码验证。
+- **本地即可渲染**：Python、Pillow、fontTools、FFmpeg；示例不需要 API Key，也不下载模型。
+- **中英文示例**：显式指定字体，预先检查缺字与文字溢出。
 
-Default output is a **silent**, vertical 1080×1920 H.264 video at 24 fps. Research, storytelling and visual review are Agent/human work; the renderer does not automatically turn a prompt into a verified lesson. Custom subject-specific illustrations require drawing-code changes.
+默认输出为 **1080×1920、24 fps、H.264 无声竖屏视频**。事实核查、叙事和画面审阅由 Agent 与使用者完成；渲染器不会自动把一句提示变成经过核查的完整课程。内置三种通用图示，更具体的学科插画需要扩展绘图代码。
 
-## Run with npx — no npm login
+## 直接用 npx，不需要 npm 登录
 
-Node 22+ and Git are needed for this direct GitHub command. This immutable commit contains the CLI; no npm registry publication is involved:
+需要 Node 22+ 和 Git。以下命令固定到包含 CLI 的提交，直接从公开 GitHub 拉取运行，不依赖 npm registry 发布：
 
 ```bash
 npx --yes --ignore-scripts --package="git+https://github.com/Karl-Dai/sketch-video-skill.git#3e7e94259864588ff5ac815d1cc608bb42ac532f" sketch-video --help
 ```
 
-Replace `--help` with `init my-video --example water` to create a Chinese storyboard, or `install-skill /path/to/new-skill-directory` to install the Agent Skill. Running the CLI and installing a Skill are separate actions. Neither installs Python, FFmpeg or models. [Command reference and tested scope](docs/npm.md).
+把 `--help` 换成 `init my-video --example water`，即可创建中文分镜示例；换成 `install-skill /path/to/new-skill-directory`，则会把技能复制到指定的新目录。**运行 CLI 和安装 Agent Skill 是两件事**，都不会自动安装 Python、FFmpeg 或模型。完整语法见[命令说明与实测范围](docs/npm.md)。
 
-For repeat use, install the same explicit GitHub package into your project:
+也可以把同一版本安装到自己的项目中，方便反复调用：
 
 ```bash
 npm install --ignore-scripts "git+https://github.com/Karl-Dai/sketch-video-skill.git#3e7e94259864588ff5ac815d1cc608bb42ac532f"
 npm exec -- sketch-video init my-video --example water
 ```
 
-After setting up a Python environment, run `npm exec -- sketch-video doctor --python /path/to/python`, then `npm exec -- sketch-video render --python /path/to/python my-video/story.json --out new-output --font /path/to/font.ttc`, followed by `npm exec -- sketch-video verify --python /path/to/python new-output`. The wrapper calls the existing Python renderer. For registry-free distribution, the manifest sets `private: true`; the GitHub repository remains public.
+配置好 Python 环境后，用 `npm exec -- sketch-video doctor --python /path/to/python` 检查依赖，再运行 `npm exec -- sketch-video render --python /path/to/python my-video/story.json --out new-output --font /path/to/font.ttc`，最后用 `npm exec -- sketch-video verify --python /path/to/python new-output` 完整解码检查。Node 仅包装现有 Python 渲染器。包配置的 `private: true` 用于防止误发 npm registry，GitHub 源码仍然公开。
 
-## Run Python directly
+## 也可直接运行 Python
 
-Requirements: Python 3.10+, FFmpeg/ffprobe with the `libx264` encoder, and a local TTF/OTF/TTC font. Install FFmpeg with your system package manager first. Linux users can use DejaVu Sans for English and Noto Sans CJK for Chinese. Fonts and executables are not bundled.
+需要 Python 3.10+、带 `libx264` 的 FFmpeg/ffprobe，以及本地 TTF/OTF/TTC 字体。请先用系统包管理器安装 FFmpeg。英文可用 DejaVu Sans，中文可用 Noto Sans CJK；仓库不附带字体或可执行程序。
 
 ```bash
 git clone https://github.com/Karl-Dai/sketch-video-skill.git
@@ -53,45 +53,65 @@ python scripts/render.py examples/idea-to-video.json --out build/demo --size 360
 python scripts/verify.py build/demo
 ```
 
-Windows: activate with `.venv\Scripts\Activate.ps1` and pass `--font "C:\path\to\font.ttf"`. Elsewhere, use `--font /path/to/font.ttf` or set `SKETCH_FONT` if discovery fails. Use a **new output directory** each time; existing paths are refused.
+Windows 使用 `.venv\Scripts\Activate.ps1` 激活环境，并用 `--font "C:\path\to\font.ttf"` 指定字体。其他系统若自动查找失败，可传 `--font /path/to/font.ttf` 或设置 `SKETCH_FONT`。每次指定一个**新的输出目录**，程序会拒绝覆盖已有目录。
 
-Outputs include `video.mp4`, `captions.srt`, `narration.txt`, `timeline.json`, QA JPGs and render/verification reports. [Watch the Chinese example](docs/water-cycle.mp4) and inspect its [evidence ledger](examples/sources.md).
+输出包含 `video.mp4`、`captions.srt`、`narration.txt`、`timeline.json`、分镜质检图，以及渲染和验证报告。
 
 ```bash
-# Preview without encoding video
+# 先检查中文分镜，不编码视频
 python scripts/render.py examples/water-cycle.zh.json --out build/water-preview \
   --font /path/to/NotoSansCJK-Regular.ttc --preview-only
 
-# Native-resolution output: omit --size, then verify the entire file
-python scripts/render.py examples/idea-to-video.json --out build/full-hd
-python scripts/verify.py build/full-hd
+# 正式渲染省略 --size，默认 1080×1920
+python scripts/render.py examples/water-cycle.zh.json --out build/water-hd \
+  --font /path/to/NotoSansCJK-Regular.ttc
+python scripts/verify.py build/water-hd
 ```
 
-Review the QA images and play the full result. A successful decode does not establish factual accuracy or readable pacing.
+中文水循环示例的事实依据见[资料清单](examples/sources.md)。还需要逐镜看图、检查字幕阅读时间并播放全片；解码通过不能替代内容与画面审阅。
 
-## Install as an Agent Skill
+## 安装为 Agent Skill
 
-For Codex, copy this directory into your configured skills directory, commonly `~/.codex/skills/sketch-video-skill`. Keep `SKILL.md`, `scripts/`, `references/` and `examples/` together. Inspect an existing destination before replacing anything. Install Python dependencies in a virtual environment and make FFmpeg available. Reload skill discovery if needed. Compatible Agents can load the same `SKILL.md`; the scripts also run independently.
+在 Codex 中，把本目录复制到配置的技能目录，通常为 `~/.codex/skills/sketch-video-skill`。保留 `SKILL.md`、`scripts/`、`references/`、`examples/` 的相对结构；如目标已存在，先检查用途。用虚拟环境安装 Python 依赖，确保 FFmpeg 可用，必要时刷新技能发现。兼容 Agent 也可以直接加载 `SKILL.md`；脚本本身不依赖特定 Agent 平台。
 
-Try:
+可以这样使用：
 
-> Use $sketch-video-skill to explain how a battery stores energy to curious teenagers. Make a 45-second silent Chinese vertical video. Verify the scientific claims, use original code-drawn diagrams, include subtitles and show me the QA frames.
+> 使用 $sketch-video-skill，给好奇的中学生解释电池怎样储存能量。做一支 45 秒中文无声竖屏科普视频，核对科学事实，使用代码原创示意图，保留字幕，并给我看质检分镜。
 
-The Skill covers brief → research → script → storyboard → animation → captions → render → inspection → full decode. [SKILL.md](SKILL.md) contains the working instructions.
+完整流程：明确目标 → 查证资料 → 写讲稿 → 分镜 → 代码动画 → 字幕 → 渲染 → 看图 → 全片解码。入口在 [SKILL.md](SKILL.md)。
 
-## Make it yours
+## 换一个主题
 
-1. Start with [a brief](examples/brief.md) and a claim-to-source ledger.
-2. Edit titles, scene durations, labels and captions in [an example JSON](examples/idea-to-video.json).
-3. Choose `tree`, `process` or `cycle`; extend the drawing code for richer visuals.
-4. Preview, inspect, render and verify. Keep script, caption and timing edits together.
+1. 从[创作简报](examples/brief.md)和事实来源表开始，先确定观众看完能理解什么。
+2. 修改[示例 JSON](examples/idea-to-video.json)里的标题、时长、标签和字幕。
+3. 用 `tree` 表示分枝关系，`process` 表示步骤，`cycle` 表示循环；不合适的图示需要改代码。
+4. 先预览再渲染，修改讲稿时同步修改字幕和时间安排。
 
-Read the [storyboard contract](references/storyboard.md), [production notes](references/workflow.md) and [measured validation results](docs/validation.md). Caption timing is a text-length heuristic, not speech alignment. The baseline is single-process; no real-time or long-video speedup is promised.
+详细说明见[分镜格式](references/storyboard.md)、[制作方法](references/workflow.md)和[可复现实测](docs/validation.md)。字幕按文字长度分配时间，未做语音对齐。当前渲染器为单进程，没有实时渲染或长片加速承诺。
 
-## Voice is optional—and experimental
+## 从想法到有声成片，再到发布交接
 
-The core works without audio. Upstream Kokoro Chinese ONNX auditions have passed short audio technical checks, but no final voice has been accepted and full-film narration is incomplete. Naturalness and production readiness are unvalidated. This repository has no TTS adapter or model installer. See the [optional narration procedure](references/voice.md) before extending it.
+无声流程保持兼容。现在有可执行的后半程：音色试听与选择记录、场景或整段 WAV 导入、显式本地 TTS/ASR 适配器、按实测音长调整时间线与字幕、AAC 混流、完整 AV 检查，以及本地发布素材包和回执。[完整操作示例](docs/production.md)与[音频格式、模型许可和成本边界](references/voice.md)已提供。
 
-## License and scope
+先完成目标、查证、讲稿和分镜，再准备 `story.json` 与经过审阅的 `audio.json`：
 
-[MIT](LICENSE) covers our original code, documentation and code-drawn demo visuals. Dependencies, models, voices, fonts and external assets retain their own terms; see [NOTICE.md](NOTICE.md). No model weights or font files are included. Creating a video does not authorize posting it externally; the package has no publishing integration.
+```bash
+python scripts/production.py audition voices.json --out build/auditions
+# 实际试听并选音色；导入 WAV，或显式执行已安装的本地 TTS 适配器。
+python scripts/production.py prepare-audio story.json --audio audio.json --out build/prepared
+python scripts/production.py asr-check build/prepared --transcript transcript.json --out build/asr-review.json
+python scripts/render.py build/prepared/retimed.json --out build/animation --font /path/to/font.ttf
+python scripts/production.py mux build/animation build/prepared --out build/final
+python scripts/production.py verify-av build/final
+python scripts/production.py package build/final --metadata publication.json --out build/handoff
+```
+
+ASR 可跳过，也可导入已有转录或显式调用本地适配器，不会自动下载模型。未提供审阅过的字幕边界时，时间分配仍是明确标记的文字长度启发式，不冒充语音强制对齐。完整说明另附**无需模型的测试音版本**，用于复现技术流程，不代表真人配音质量已验证。
+
+上游已接受本次 Qwen3-TTS Serena 试听，但整片配音与 Whisper 核验仍在进行，不能推广成通用自然度或性能保证。0.6B CustomVoice 不支持额外风格指令；Linux BF16 速度和安装方式也不承诺适用于 Mac。模型大小、许可及未知成本见音频说明。
+
+素材打包不会上传。核对事实、版权、隐私、账号和全片 AV 后，只有收到明确授权才交由已有浏览器能力或人工发布，再记录真实回执。未实现、也不伪称存在通用小红书发布 API。
+
+## 开源范围
+
+[MIT 许可](LICENSE)覆盖我们原创的代码、文档和代码绘制的演示画面。第三方依赖、模型、声音、字体和素材保留各自许可，见 [NOTICE.md](NOTICE.md)。不打包模型权重和字体。制作视频不代表授权向社交平台发布，本项目也没有外部发布功能。

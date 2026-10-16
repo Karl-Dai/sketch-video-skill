@@ -1,11 +1,11 @@
 ---
 name: sketch-video-skill
-description: Create code-drawn hand-drawn explainer videos from an idea or script, including research, storyboard, animation, synchronized captions, rendering and visual/video QA. Use for educational sketch animations; narration is optional.
+description: Produce hand-drawn explainers from an idea through research, script, storyboard, animation, optional narration/ASR, audio-based captions, AV checks and a publication handoff. Use for code-drawn educational videos; actual external posting needs separate authorization.
 ---
 
 # Sketch Video
 
-Turn an idea into a clear, inspectable explainer: a script with evidence, a storyboard, code-drawn animation, synchronized subtitles and a validated local video. Use the user's language and requested duration. The bundled renderer makes silent paper-style vertical videos; it is a starting point for topic-specific diagrams, not an automatic research or voice service.
+Turn an idea into an inspectable explainer: evidence, script, storyboard, code-drawn animation, optional reviewed narration, subtitles, validated final media and a publication handoff. Use the user's language and duration. Preserve the silent path when audio is not requested. The renderer is a starting point for topic-specific diagrams; local TTS/ASR uses explicit adapters, not an automatic service.
 
 ## Shape the explanation
 
@@ -33,10 +33,30 @@ The output directory must be new. Draft with `--size 360x640`; final defaults ar
 
 Inspect start, middle and end frames of every scene, plus contact sheets. Check legibility, text margins, line breaks, transitions, diagram meaning and timing. For technical motion, inspect additional frames near reveals. If a diagram needs a different visual grammar, extend the drawing code rather than forcing a misleading tree or cycle.
 
-## Render, verify and deliver
+## Narration, optional ASR and the real audio clock
+
+For voiced work, read [references/voice.md](references/voice.md) and the [complete walkthrough](docs/production.md). The model-free WAV path is fully executable; optional model adapters require already-installed software/weights and explicit `--execute`. Do not download models or install system software automatically. Record exact model/voice license, revision, bytes, device/dtype and resource cost; unknown is not zero. An accepted audition is specific to that production, not a universal voice-quality guarantee.
+
+1. Generate/import comparable short auditions. `audition voices.json --out new-listen` makes WAVs and technical metrics; listen before `select-voice ... --voice ID --note ... --out selection.json`.
+2. Import reviewed scene WAVs, or explicitly execute a trusted local `tts request.json --adapter adapter.json --out new-speech --execute`. Whole-script synthesis is also supported but needs reviewed scene cuts afterwards. No style control is promised for Qwen 0.6B CustomVoice Serena. Unknown platforms require a short device-specific trial; do not transfer Linux dtype/wheel/performance assumptions to macOS.
+3. Run `prepare-audio story.json --audio audio.json --out new-prepared --fps 24`. It measures audio and pads only frame-rounding tails. Reviewed caption times become the shared integer frame clock; without them timing remains a labelled heuristic. Never imply forced alignment.
+4. Optionally invoke `asr ... --adapter ... --execute` or import an existing transcript, then run `asr-check prepared --transcript transcript.json --out review.json`. Listen to discrepancies and fix source audio/text; recognition is not ground truth and does not automatically approve narration.
+5. Render `prepared/retimed.json` at the same fps, then `mux new-render prepared --out new-final` and `verify-av new-final`. An old silent timeline cannot simply be reused with new narration. Do not use `-shortest` to hide mismatched durations.
+
+These names are npx CLI commands. Direct Python uses `python scripts/production.py <command>`; rendering remains `python scripts/render.py`. See the walkthrough for exact arguments. `fixture --out new-inputs` supplies clearly labelled test tones and a test transcript with zero model downloads; fixture success is not speech-quality or real-ASR evidence.
+
+## Final verification and delivery
 
 Render after fixing preview problems. Run `scripts/verify.py`: it checks H.264/yuv420p, dimensions, fps, duration, frame count, continuous captions, SRT consistency, silence and a full decode. This does not establish scientific accuracy or visual quality; perform the visual review separately. Record inputs, dependency versions, commands, verification result and any limits. Rerun affected checks after edits.
 
-Deliver the video, editable storyboard/code, SRT, narration text, sources, representative preview and QA results. State clearly when it is silent. See [docs/validation.md](docs/validation.md) for the tested baseline and reproduction commands.
+For narrated output, `verify-av` checks both streams, frame count, subtitle agreement, AV timestamps/duration, full decode, silence/clipping and PCM levels. Listen through the whole final film and inspect boundaries: technical checks do not establish pronunciation, naturalness or semantic sync. Record actual checks separately from upstream unfinished experiments.
 
-Narration is an optional extension; read [references/voice.md](references/voice.md) only when requested. Short audio smoke checks do not validate a complete voiced video. Keep licensing of dependencies, fonts, models and assets separate from the project's original code. Do not bundle weights or unlicensed media. A request to make a video does not authorize posting it externally.
+Deliver video, editable source, SRT, narration text, sources, preview and QA records. State whether the output is silent or voiced. See [docs/validation.md](docs/validation.md) for the original baseline; [docs/production.md](docs/production.md) covers the executable extension.
+
+## Publication handoff and receipt
+
+Run `package final --metadata publication.json --out new-handoff` to assemble final media, cover, subtitles, public copy, rights notes, AV results, hashes and a review checklist. This is local and sends nothing. Review personal data and rights before exposing the package. Keep dependencies, fonts, models, voices and assets under their own licenses; never bundle weights or unlicensed media.
+
+A video request does not authorize posting it. Before any external action, obtain explicit current user approval for the exact platform, account and media. Use an existing authorized browser capability or manual upload; no generic platform/Xiaohongshu API is implemented here. Stop at login, CAPTCHA, denial or uncertainty. Confirm the actual draft/post URL before claiming success; inspect an uncertain result before retrying.
+
+Save evidence using `record-publication handoff --receipt receipt.json --authorized` only when real authorization exists. This records the caller's evidence; it does not grant consent, upload or independently verify a post. Use accurate `published`, `draft`, `failed`, `unknown`, `denied` or `not_attempted` outcomes. Target/media hashes must match; do not overwrite an earlier receipt.

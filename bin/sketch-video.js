@@ -16,8 +16,14 @@ Usage:
   sketch-video doctor [--python <executable>]
   sketch-video render [--python <executable>] <story.json> --out <new-directory> [render options]
   sketch-video verify [--python <executable>] <render-directory>
+  sketch-video fixture --out <new-directory>
+  sketch-video audition | select-voice | tts | asr | prepare-audio | asr-check [options]
+  sketch-video mux | verify-av | package | record-publication [options]
 
 Rendering options are passed to the bundled Python renderer; use render --help.
+Production steps use --help for their exact syntax; --python is supported on each.
+TTS/ASR need a trusted local adapter and --execute; WAV import needs no model.
+package creates a local handoff only; record-publication stores a caller receipt.
 Python 3.10+, Pillow, fontTools, FFmpeg/libx264 and a suitable font are external.
 Set SKETCH_PYTHON to a Python executable, or activate your virtual environment.
 Nothing is installed or downloaded automatically. Existing destinations are refused.
@@ -74,7 +80,7 @@ function init(args) {
 function installSkill(args) {
   if (args.length !== 1 || args[0].startsWith('--')) fail('install-skill requires an explicit new skill directory');
   const created = createNewDirectory(args[0], dest => {
-    for (const name of ['SKILL.md', 'agents', 'scripts', 'references', 'examples', 'docs', 'requirements.txt', 'requirements-dev.txt', 'README.md', 'README.zh-CN.md', 'NOTICE.md', 'LICENSE']) {
+    for (const name of ['SKILL.md', 'agents', 'scripts', 'references', 'examples', 'docs', 'requirements.txt', 'requirements-dev.txt', 'README.md', 'README.zh-CN.md', 'README_EN.md', 'NOTICE.md', 'LICENSE']) {
       fs.cpSync(path.join(root, name), path.join(dest, name), { recursive: true, filter: source => !source.includes('__pycache__') && !source.endsWith('.pyc') });
     }
   });
@@ -108,6 +114,10 @@ function main(args) {
     const { python, remaining } = pythonArgs(args);
     if (!remaining.length) fail(`${command} requires arguments; use ${command} --help`);
     return invoke(python, [path.join(root, 'scripts', `${command}.py`), ...remaining], { stdio: 'inherit' }).status;
+  }
+  if (['fixture', 'audition', 'select-voice', 'tts', 'asr', 'prepare-audio', 'asr-check', 'mux', 'verify-av', 'package', 'record-publication'].includes(command)) {
+    const { python, remaining } = pythonArgs(args);
+    return invoke(python, [path.join(root, 'scripts', 'production.py'), command, ...remaining], { stdio: 'inherit' }).status;
   }
   fail(`Unknown command: ${command}. Use --help.`);
 }

@@ -31,9 +31,27 @@ try {
   cli('verify', '--python', python, out);
   const result = JSON.parse(fs.readFileSync(path.join(out, 'verification.json')));
   assert.equal(result.decoded_frames, 48);
+  let productionFrames = null;
+  if (process.env.TEST_PRODUCTION === '1') {
+    const call = (...args) => cli(...args, '--python', python);
+    const inputs = path.join(tmp, 'audio inputs');
+    call('fixture', '--out', inputs);
+    const prepared = path.join(tmp, 'prepared');
+    call('prepare-audio', path.join(inputs, 'story.json'), '--audio', path.join(inputs, 'audio.json'), '--out', prepared);
+    const animation = path.join(tmp, 'animation');
+    call('render', path.join(prepared, 'retimed.json'), '--out', animation, '--font', process.env.TEST_FONT, '--size', '360x640');
+    const final = path.join(tmp, 'final');
+    call('mux', animation, prepared, '--out', final);
+    call('verify-av', final);
+    const handoff = path.join(tmp, 'handoff');
+    call('package', final, '--metadata', path.join(inputs, 'publication.json'), '--out', handoff);
+    productionFrames = JSON.parse(fs.readFileSync(path.join(final, 'av-verification.json'))).decoded_frames;
+    assert.equal(productionFrames, 59);
+    assert.equal(JSON.parse(fs.readFileSync(path.join(handoff, 'handoff.json'))).uploaded, false);
+  }
   const consumer = path.join(tmp, 'npm consumer');
   fs.mkdirSync(consumer);
   run(process.execPath, [npm, 'install', '--ignore-scripts', '--no-audit', '--no-fund', spec], consumer);
   assert.equal(run(process.execPath, [npm, 'exec', '--offline', '--', 'sketch-video', '--version'], consumer).trim(), '0.1.0');
-  console.log(JSON.stringify({status: 'passed', spec, npx_help: 'passed', npx_init: 'passed', npx_install_skill: 'passed', npx_doctor: 'passed', npx_render_verify: 'passed', decoded_frames: result.decoded_frames, size: result.size, fps: result.fps, npm_install_github: 'passed', npm_registry_publication: false}, null, 2));
+  console.log(JSON.stringify({status: 'passed', spec, npx_help: 'passed', npx_init: 'passed', npx_install_skill: 'passed', npx_doctor: 'passed', npx_render_verify: 'passed', decoded_frames: result.decoded_frames, production_av_frames: productionFrames, size: result.size, fps: result.fps, npm_install_github: 'passed', npm_registry_publication: false}, null, 2));
 } finally { fs.rmSync(tmp, {recursive: true, force: true}); }

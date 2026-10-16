@@ -4,7 +4,7 @@
 
 用代码把知识画出来：纸张底色、手绘线条、逐步生长的关系图，再配上一条可以核对的字幕时间线。
 
-[English](README.md) · [Skill 入口](SKILL.md) · [12 秒演示](docs/demo.mp4) · [中文示例](docs/water-cycle.mp4) · [实测记录](docs/validation.md)
+[English](README_EN.md) · [Skill 入口](SKILL.md) · [12 秒演示](docs/demo.mp4) · [中文示例](docs/water-cycle.mp4) · [实测记录](docs/validation.md)
 
 ![三个分镜：叙事树、制作流程、检查循环](docs/preview.jpg)
 
@@ -89,9 +89,28 @@ python scripts/verify.py build/water-hd
 
 详细说明见[分镜格式](references/storyboard.md)、[制作方法](references/workflow.md)和[可复现实测](docs/validation.md)。字幕按文字长度分配时间，未做语音对齐。当前渲染器为单进程，没有实时渲染或长片加速承诺。
 
-## 配音：可选，仍属实验
+## 从想法到有声成片，再到发布交接
 
-核心无声动画和字幕流程可以独立运行。上游 Kokoro 中文 ONNX 短段试听通过音频技术检查，但尚无获认可的最终音色，也未完成整片配音。自然度和生产可用性尚未验证。本仓库不提供 TTS 适配器或模型安装器；扩展前请阅读[配音流程与边界](references/voice.md)。
+无声流程保持兼容。现在有可执行的后半程：音色试听与选择记录、场景或整段 WAV 导入、显式本地 TTS/ASR 适配器、按实测音长调整时间线与字幕、AAC 混流、完整 AV 检查，以及本地发布素材包和回执。[完整操作示例](docs/production.md)与[音频格式、模型许可和成本边界](references/voice.md)已提供。
+
+先完成目标、查证、讲稿和分镜，再准备 `story.json` 与经过审阅的 `audio.json`：
+
+```bash
+python scripts/production.py audition voices.json --out build/auditions
+# 实际试听并选音色；导入 WAV，或显式执行已安装的本地 TTS 适配器。
+python scripts/production.py prepare-audio story.json --audio audio.json --out build/prepared
+python scripts/production.py asr-check build/prepared --transcript transcript.json --out build/asr-review.json
+python scripts/render.py build/prepared/retimed.json --out build/animation --font /path/to/font.ttf
+python scripts/production.py mux build/animation build/prepared --out build/final
+python scripts/production.py verify-av build/final
+python scripts/production.py package build/final --metadata publication.json --out build/handoff
+```
+
+ASR 可跳过，也可导入已有转录或显式调用本地适配器，不会自动下载模型。未提供审阅过的字幕边界时，时间分配仍是明确标记的文字长度启发式，不冒充语音强制对齐。完整说明另附**无需模型的测试音版本**，用于复现技术流程，不代表真人配音质量已验证。
+
+上游已接受本次 Qwen3-TTS Serena 试听，但整片配音与 Whisper 核验仍在进行，不能推广成通用自然度或性能保证。0.6B CustomVoice 不支持额外风格指令；Linux BF16 速度和安装方式也不承诺适用于 Mac。模型大小、许可及未知成本见音频说明。
+
+素材打包不会上传。核对事实、版权、隐私、账号和全片 AV 后，只有收到明确授权才交由已有浏览器能力或人工发布，再记录真实回执。未实现、也不伪称存在通用小红书发布 API。
 
 ## 开源范围
 

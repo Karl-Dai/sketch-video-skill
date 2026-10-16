@@ -1,6 +1,6 @@
 # Node CLI and package distribution
 
-The CLI wraps the existing Python renderer; it does not replace it. The package has no Node dependencies or install/prepare hooks. It does not download models, execute remote setup scripts or install Python/FFmpeg. Rendering remains silent; narration is unchanged and experimental.
+The CLI wraps the Python drawing and production scripts. It has no Node dependencies or install/prepare hooks, does not download models and does not install Python/FFmpeg. Silent rendering remains supported; the [production extension](production.md) supports imported WAVs, explicit local TTS/ASR adapters, retiming, mixing, AV checks and publication handoffs. Actual model quality is separate from the model-free fixture tests.
 
 ## Current publication status
 
@@ -24,6 +24,11 @@ Use the same prefix with any command below. `--ignore-scripts` disables dependen
 | `sketch-video doctor --python /path/to/python` | Check Python ≥3.10, Pillow, fontTools, FFmpeg, ffprobe and libx264; nonzero exit if missing |
 | `sketch-video render --python /path/to/python story.json --out new-output` | Call the packaged Python renderer; supports its existing flags |
 | `sketch-video verify --python /path/to/python new-output` | Check captions and fully decode the generated video |
+| `fixture`, `audition`, `select-voice` | Make labelled test tones, inspect pre-generated auditions, record a specific listening decision |
+| `tts`, `asr` | Plan local adapter requests; execute only with `--execute` |
+| `prepare-audio`, `asr-check` | Measure WAVs, build the retimed storyboard/subtitle clock, review imported recognition differences |
+| `mux`, `verify-av` | Mix matching video/audio and check both complete streams |
+| `package`, `record-publication` | Create a local handoff and store observed receipts; no upload |
 
 `SKETCH_PYTHON` selects an executable without passing `--python` each time. Pass an executable path, not a shell command with arguments. Input/output paths resolve from the current working directory, while bundled scripts resolve from the package directory. No shell is used to launch Python. Existing init/install/render destinations are refused.
 
@@ -47,6 +52,6 @@ npm pack --ignore-scripts --dry-run
 
 For the remote end-to-end test, set `GITHUB_NPX_SPEC` to the exact 40-character GitHub commit spec above, `TEST_PYTHON` to your environment's Python and `TEST_FONT` to a local font, then run `npm run test:github`. It runs actual npx help, init, Skill installation, doctor, rendering and verification from the remote package, and separately checks `npm install` from GitHub. Local execution passed with 48 fully decoded frames at 1080×1920/24 fps. A fresh temporary npm cache is used and removed with the test workspace.
 
-Node 22+ is the declared minimum. Local validation uses macOS ARM64, Node 26.9.0 and npm 11.19.1; Linux CI checks additional Node versions. Windows has not been tested. Registry installation cannot be validated before an authorized registry publication.
+Node 22+ is the declared minimum. Local validation uses macOS ARM64, Node 26.9.0 and npm 11.19.1; Linux CI checks Node 22/24. Windows has not been tested. No registry publication is planned. `README.md` is Chinese-first, `README_EN.md` is English, and `README.zh-CN.md` remains a synchronized Chinese compatibility entry.
 
 The implementation follows the official npm documentation for [bin/files metadata](https://docs.npmjs.com/cli/v11/configuring-npm/package-json/), [npm exec/npx](https://docs.npmjs.com/cli/v11/commands/npm-exec/), [Git/tarball package specs](https://docs.npmjs.com/cli/v11/using-npm/package-spec/) and [publishing](https://docs.npmjs.com/cli/v11/commands/npm-publish/).
