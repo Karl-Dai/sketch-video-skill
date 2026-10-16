@@ -1,0 +1,26 @@
+{
+  "name": "sketch-video-skill",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Turn ideas into hand-drawn explainer videos with code. Agent Skill and local rendering CLI.",
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": { "sketch-video": "bin/sketch-video.js" },
+  "engines": { "node": ">=22" },
+  "repository": { "type": "git", "url": "git+https://github.com/Karl-Dai/sketch-video-skill.git" },
+  "homepage": "https://github.com/Karl-Dai/sketch-video-skill#readme",
+  "bugs": "https://github.com/Karl-Dai/sketch-video-skill/issues",
+  "keywords": ["agent-skill", "codex", "explainer", "animation", "subtitles", "ffmpeg"],
+  "files": [
+    "bin/sketch-video.js", "SKILL.md", "agents/openai.yaml",
+    "scripts/render.py", "scripts/verify.py", "scripts/check_package.py",
+    "references/*.md", "examples/*.json", "examples/*.md",
+    "requirements.txt", "requirements-dev.txt", "README.zh-CN.md", "NOTICE.md", "LICENSE",
+    "docs/preview.jpg", "docs/water-preview.jpg", "docs/demo.mp4", "docs/water-cycle.mp4",
+    "docs/validation.md", "docs/validation-results.json", "docs/npm.md"
+  ],
+  "scripts": {
+    "test": "node --test tests/cli.test.cjs",
+    "test:pack": "node tests/npm-pack.cjs"
+  }
+}

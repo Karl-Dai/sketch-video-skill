@@ -16,7 +16,7 @@ def main():
     if len(parts) != 3 or parts[0].strip():
         raise ValueError('SKILL.md requires YAML frontmatter')
     meta = yaml.safe_load(parts[1])
-    if meta.get('name') != ROOT.name or not meta.get('description'):
+    if meta.get('name') != 'sketch-video-skill' or not meta.get('description'):
         raise ValueError('skill name or description is invalid')
     ui = yaml.safe_load((ROOT/'agents/openai.yaml').read_text())
     if '$sketch-video-skill' not in ui['interface']['default_prompt']:
