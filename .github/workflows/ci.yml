@@ -29,7 +29,8 @@ jobs:
         env:
           TEST_FONT: /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
           TEST_PRODUCTION: '1'
-          GITHUB_NPX_SPEC: git+https://github.com/Karl-Dai/sketch-video-skill.git#35c4e203f72cbdcdd0de29fdf7f9c9b20a8f79b9
+          TEST_VOICE: '1'
+          GITHUB_NPX_SPEC: git+https://github.com/Karl-Dai/sketch-video-skill.git#e54741d821474e417bb1f25daf13d93e393bc259
         run: |
           npm ci --ignore-scripts --no-audit --no-fund
           npm test

@@ -25,7 +25,7 @@ Default output is a **silent**, vertical 1080×1920 H.264 video at 24 fps. Resea
 Node 22+ and Git are needed for this direct GitHub command. This immutable commit contains the CLI; no npm registry publication is involved:
 
 ```bash
-npx --yes --ignore-scripts --package="git+https://github.com/Karl-Dai/sketch-video-skill.git#35c4e203f72cbdcdd0de29fdf7f9c9b20a8f79b9" sketch-video --help
+npx --yes --ignore-scripts --package="git+https://github.com/Karl-Dai/sketch-video-skill.git#e54741d821474e417bb1f25daf13d93e393bc259" sketch-video --help
 ```
 
 Replace `--help` with `init my-video --example water` to create a Chinese storyboard, or `install-skill /path/to/new-skill-directory` to install the Agent Skill. Running the CLI and installing a Skill are separate actions. Neither installs Python, FFmpeg or models. [Command reference and tested scope](docs/npm.md).
@@ -33,7 +33,7 @@ Replace `--help` with `init my-video --example water` to create a Chinese storyb
 For repeat use, install the same explicit GitHub package into your project:
 
 ```bash
-npm install --ignore-scripts "git+https://github.com/Karl-Dai/sketch-video-skill.git#35c4e203f72cbdcdd0de29fdf7f9c9b20a8f79b9"
+npm install --ignore-scripts "git+https://github.com/Karl-Dai/sketch-video-skill.git#e54741d821474e417bb1f25daf13d93e393bc259"
 npm exec -- sketch-video init my-video --example water
 ```
 

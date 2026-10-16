@@ -11,7 +11,7 @@ Version `0.1.0` is distributed directly from this public GitHub repository. Ther
 Tested, immutable GitHub entry point (requires Node 22+ and Git):
 
 ```bash
-npx --yes --ignore-scripts --package="git+https://github.com/Karl-Dai/sketch-video-skill.git#35c4e203f72cbdcdd0de29fdf7f9c9b20a8f79b9" sketch-video --help
+npx --yes --ignore-scripts --package="git+https://github.com/Karl-Dai/sketch-video-skill.git#e54741d821474e417bb1f25daf13d93e393bc259" sketch-video --help
 ```
 
 Use the same prefix with any command below. `--ignore-scripts` disables dependency lifecycle scripts; it does not suppress the explicitly requested CLI. This package defines no install/prepare hook in any case.

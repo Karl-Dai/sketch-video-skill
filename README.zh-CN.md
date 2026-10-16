@@ -25,7 +25,7 @@
 需要 Node 22+ 和 Git。以下命令固定到包含 CLI 的提交，直接从公开 GitHub 拉取运行，不依赖 npm registry 发布：
 
 ```bash
-npx --yes --ignore-scripts --package="git+https://github.com/Karl-Dai/sketch-video-skill.git#35c4e203f72cbdcdd0de29fdf7f9c9b20a8f79b9" sketch-video --help
+npx --yes --ignore-scripts --package="git+https://github.com/Karl-Dai/sketch-video-skill.git#e54741d821474e417bb1f25daf13d93e393bc259" sketch-video --help
 ```
 
 把 `--help` 换成 `init my-video --example water`，即可创建中文分镜示例；换成 `install-skill /path/to/new-skill-directory`，则会把技能复制到指定的新目录。**运行 CLI 和安装 Agent Skill 是两件事**，都不会自动安装 Python、FFmpeg 或模型。完整语法见[命令说明与实测范围](docs/npm.md)。
@@ -33,7 +33,7 @@ npx --yes --ignore-scripts --package="git+https://github.com/Karl-Dai/sketch-vid
 也可以把同一版本安装到自己的项目中，方便反复调用：
 
 ```bash
-npm install --ignore-scripts "git+https://github.com/Karl-Dai/sketch-video-skill.git#35c4e203f72cbdcdd0de29fdf7f9c9b20a8f79b9"
+npm install --ignore-scripts "git+https://github.com/Karl-Dai/sketch-video-skill.git#e54741d821474e417bb1f25daf13d93e393bc259"
 npm exec -- sketch-video init my-video --example water
 ```
 
